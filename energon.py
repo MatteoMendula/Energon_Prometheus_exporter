@@ -47,5 +47,7 @@ class Energon:
 
 if __name__ == '__main__':
     energon = Energon()
+    detected_model = energon.detected_model
     energy_metrics = energon.get_energy_metrics()
-    print(energy_metrics)
+    print("detected_model: ", detected_model)
+    print("energy_metrics: ", energy_metrics)
