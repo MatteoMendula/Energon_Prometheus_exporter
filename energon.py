@@ -46,5 +46,6 @@ class Energon:
 
 
 if __name__ == '__main__':
-    out = utils.run_command_and_get_output("ls -l")
-    print(out)
+    energon = Energon()
+    energy_metrics = energon.get_energy_metrics()
+    print(energy_metrics)
