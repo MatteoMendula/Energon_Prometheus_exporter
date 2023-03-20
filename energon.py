@@ -37,9 +37,9 @@ class Energon:
         
         energy_metrics["error"] = out_tot_energy["error"] or out_cpu_energy["error"] or out_gpu_energy["error"]
 
-        energy_metrics["total"] = out_tot_energy["out_value"]
-        energy_metrics["cpu"] = out_cpu_energy["out_value"]
-        energy_metrics["gpu"] = out_gpu_energy["out_value"]
+        energy_metrics["total"] = utils.parseToFloat(out_tot_energy["out_value"])
+        energy_metrics["cpu"] = utils.parseToFloat(out_cpu_energy["out_value"])
+        energy_metrics["gpu"] = utils.parseToFloat(out_gpu_energy["out_value"])
         
         return energy_metrics
 

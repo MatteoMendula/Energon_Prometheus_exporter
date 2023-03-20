@@ -22,3 +22,16 @@ def run_command_and_get_output(command):
 
 
     return command_output
+
+def suppress_parsing_exception(func):
+    def function_wrapper(x):
+        try:
+            return func(x)
+        except Exception as e:
+            return float("nan")
+    return function_wrapper
+
+@suppress_parsing_exception
+def parseToFloat(value):
+    return float(value)
+
