@@ -11,7 +11,7 @@ class Energon:
         out = utils.run_command_and_get_output("lshw -C systemshw -C system")
         if out["error"]:
             return "Error in getting model %s" % out["out_value"]
-        if out["out_value"].lower() in "nvidia jetson nano developer kit":
+        if "nvidia jetson nano developer kit" in out["out_value"].lower():
             return constants.JETSON_NANO_DEV_KIT
         else:  
             return constants.UNKNOWN_MODEL
@@ -19,7 +19,7 @@ class Energon:
     def get_energy_metrics(self):
         energy_metrics = {}
 
-        if not constants.COMPLIANT_MODELS.includes(self.detected_model):
+        if not self.detected_model in constants.COMPLIANT_MODELS:
             energy_metrics["error"] = False
             energy_metrics["total"] = "Error: Model not supported"
             energy_metrics["cpu"] = "Error: Model not supported"
