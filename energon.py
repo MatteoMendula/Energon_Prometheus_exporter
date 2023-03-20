@@ -11,7 +11,7 @@ class Energon:
         out = utils.run_command_and_get_output("lshw -C systemshw -C system")
         if out["error"]:
             return "Error in getting model %s" % out["out_value"]
-        if out["out_value"].lower().includes("nvidia jetson nano developer kit"):
+        if out["out_value"].lower() in "nvidia jetson nano developer kit":
             return constants.JETSON_NANO_DEV_KIT
         else:  
             return constants.UNKNOWN_MODEL
