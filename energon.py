@@ -5,7 +5,7 @@ class Energon:
     def __init__(self):
         self.name = 'Energon Prometheus Exporter'
         self.version = '0.0.1'
-        self.detected_model = self.get_model()
+        self.detected_model = self.detect_model()
 
     def detect_model(self):
         out = utils.run_command_and_get_output("lshw -C systemshw -C system")
