@@ -58,7 +58,7 @@ class Energon:
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
             return jetson_nano_dev_kit.get_jetson_nano_dev_kit_n_cpus(n_proc)
 
-    def storage_metrics(self):
+    def get_storage_metrics(self):
         storage_metrics = {}
 
         if not self.detected_model in constants.COMPLIANT_MODELS:
@@ -77,6 +77,8 @@ if __name__ == '__main__':
     detected_model = energon.detected_model
     energy_metrics = energon.get_energy_metrics()
     cpu_frequency_metrics = energon.get_cpu_frequency_metrics()
+    storage_metrics = energon.get_storage_metrics()
     print("detected_model: ", detected_model)
     print("energy_metrics: ", energy_metrics)
     print("cpu_frequency_metrics: ", cpu_frequency_metrics)
+    print("storage_metrics: ", storage_metrics)
