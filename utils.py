@@ -16,7 +16,7 @@ def run_command_and_get_output(command):
 
         print("command_out_value_bytes", command_out_value_bytes)
 
-        command_out_value_string_cleaned = str(command_out_value_bytes.stdout)[2:-3]
+        command_out_value_string_cleaned = str(command_out_value_bytes.stdout)[:-1]
         command_output["out_value"] = command_out_value_string_cleaned
         command_output["error"] = False
     except subprocess.CalledProcessError as e:
