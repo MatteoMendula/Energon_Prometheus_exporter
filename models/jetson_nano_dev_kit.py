@@ -38,9 +38,9 @@ def get_jetson_nano_dev_kit_n_cpus(n_proc):
 def get_jetson_nano_dev_kit_storage_metrics(storage_metrics):
     _storage_metrics = utils.run_command_and_get_output("df -h /")
     storage_metrics["error"] = _storage_metrics["error"]
-    storage_metrics["out_value"] = _storage_metrics["out_value"]
 
     if storage_metrics["error"] == True:
+        storage_metrics["out_value"] = _storage_metrics["out_value"]
         return storage_metrics
     
     matched_lines = [line for line in _storage_metrics["out_value"].split('\n') if line.startswith("/dev")]
