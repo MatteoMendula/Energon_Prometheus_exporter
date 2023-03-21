@@ -1,4 +1,5 @@
 import subprocess
+import re
 
 """Run the command and return the output as a string."""
 def run_command_and_get_output(command):
@@ -11,7 +12,7 @@ def run_command_and_get_output(command):
 
     # execute the command 
     try:
-        command_out_value_bytes = subprocess.run(_command, stdout=subprocess.PIPE)
+        command_out_value_bytes = subprocess.run(_command, stdout=subprocess.PIPE, encoding='utf-8')
         command_out_value_string_cleaned = str(command_out_value_bytes.stdout)[2:-3]
         command_output["out_value"] = command_out_value_string_cleaned
         command_output["error"] = False
@@ -23,6 +24,9 @@ def run_command_and_get_output(command):
 
     return command_output
 
+def remove_characters_from_string(string):
+    return re.sub('[^0-9.]', '', string)
+
 def suppress_parsing_exception(func):
     def function_wrapper(x):
         try:
@@ -33,5 +37,7 @@ def suppress_parsing_exception(func):
 
 @suppress_parsing_exception
 def parseToFloat(value):
-    return float(value)
+    _value = value.strip()
+    _value = remove_characters_from_string(_value)
+    return float(_value)
 

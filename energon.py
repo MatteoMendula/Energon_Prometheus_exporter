@@ -1,5 +1,6 @@
 import utils
 import constants
+from models import jetson_nano_dev_kit
 
 class Energon:
     def __init__(self):
@@ -28,26 +29,54 @@ class Energon:
 
         # ----------------- JETSON_NANO_DEV_KIT -----------------
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
-            return self.get_jetson_nano_dev_kit_energy_metrics(energy_metrics)
+            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_energy_metrics(energy_metrics)
         
-    def get_jetson_nano_dev_kit_energy_metrics(self, energy_metrics):
-        out_tot_energy = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power0_input")
-        out_cpu_energy = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power1_input")
-        out_gpu_energy = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power2_input")
-        
-        energy_metrics["error"] = out_tot_energy["error"] or out_cpu_energy["error"] or out_gpu_energy["error"]
+    def get_cpu_frequency_metrics(self):
+        cpu_frquency_metrics = {}
 
-        energy_metrics["total"] = utils.parseToFloat(out_tot_energy["out_value"])
-        energy_metrics["cpu"] = utils.parseToFloat(out_cpu_energy["out_value"])
-        energy_metrics["gpu"] = utils.parseToFloat(out_gpu_energy["out_value"])
-        
-        return energy_metrics
+        if not self.detected_model in constants.COMPLIANT_MODELS:
+            cpu_frquency_metrics["error"] = False
+            cpu_frquency_metrics["core_0"] = "Error: Model not supported"
+            cpu_frquency_metrics["core_1"] = "Error: Model not supported"
+            cpu_frquency_metrics["core_2"] = "Error: Model not supported"
+            cpu_frquency_metrics["core_3"] = "Error: Model not supported"
+            return cpu_frquency_metrics
 
+        # ----------------- JETSON_NANO_DEV_KIT -----------------
+        if self.detected_model == constants.JETSON_NANO_DEV_KIT:
+            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_cpu_frequency(cpu_frquency_metrics)
 
+    def n_proc(self):
+        n_proc = {}
+
+        if not self.detected_model in constants.COMPLIANT_MODELS:
+            n_proc["error"] = False
+            n_proc["n_cpus"] = "Error: Model not supported"
+            return n_proc
+
+        # ----------------- JETSON_NANO_DEV_KIT -----------------
+        if self.detected_model == constants.JETSON_NANO_DEV_KIT:
+            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_n_cpus(n_proc)
+
+    def storage_metrics(self):
+        storage_metrics = {}
+
+        if not self.detected_model in constants.COMPLIANT_MODELS:
+            storage_metrics["error"] = False
+            storage_metrics["total"] = "Error: Model not supported"
+            storage_metrics["used"] = "Error: Model not supported"
+            storage_metrics["available"] = "Error: Model not supported"
+            return storage_metrics
+
+        # ----------------- JETSON_NANO_DEV_KIT -----------------
+        if self.detected_model == constants.JETSON_NANO_DEV_KIT:
+            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_storage_metrics(storage_metrics)
 
 if __name__ == '__main__':
     energon = Energon()
     detected_model = energon.detected_model
     energy_metrics = energon.get_energy_metrics()
+    cpu_frequency_metrics = energon.get_cpu_frequency_metrics()
     print("detected_model: ", detected_model)
     print("energy_metrics: ", energy_metrics)
+    print("cpu_frequency_metrics: ", cpu_frequency_metrics)
