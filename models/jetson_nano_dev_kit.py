@@ -1,4 +1,4 @@
-from my_prometheus_exporter import utils
+from Energon_Prometheus_exporter import utils
 
 def get_jetson_nano_dev_kit_energy_metrics(energy_metrics):
     out_tot_energy = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power0_input")
