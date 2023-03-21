@@ -38,7 +38,7 @@ def get_jetson_nano_dev_kit_cpu_load_percentage(cpu_load_metrics):
         cpu_load_metrics["out_value"] = _cpu_load["out_value"]
         return cpu_load_metrics
     
-    matched_lines = [utils.parseToFloat(line) for line in cpu_load_metrics["out_value"].split('\n') if line.startswith("cpu")]
+    matched_lines = [utils.parseToFloat(line) for line in _cpu_load["out_value"].split('\n') if line.startswith("cpu")]
     cpu_load_metrics_tot = [utils.parseToFloat(amount) for amount in matched_lines[0].split()]
     cpu_load_metrics_core_0 = [utils.parseToFloat(amount) for amount in matched_lines[0].split()]
     cpu_load_metrics_core_1 = [utils.parseToFloat(amount) for amount in matched_lines[1].split()]
