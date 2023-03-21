@@ -24,9 +24,10 @@ def get_jetson_nano_dev_kit_cpu_frequency(cpu_frequency_metrics):
     cpu_frequency_metrics["error"] = core_0["error"] or core_1["error"] or core_2["error"] or core_3["error"]
 
     cpu_frequency_metrics["total"] = utils.parseToFloat(core_0["out_value"])
-    cpu_frequency_metrics["cpu"] = utils.parseToFloat(core_1["out_value"])
-    cpu_frequency_metrics["gpu"] = utils.parseToFloat(core_2["out_value"])
-    cpu_frequency_metrics["gpu"] = utils.parseToFloat(core_3["out_value"])
+    cpu_frequency_metrics["core_0"] = utils.parseToFloat(core_1["out_value"])
+    cpu_frequency_metrics["core_1"] = utils.parseToFloat(core_2["out_value"])
+    cpu_frequency_metrics["core_2"] = utils.parseToFloat(core_3["out_value"])
+    cpu_frequency_metrics["core_3"] = utils.parseToFloat(core_3["out_value"])
 
     return cpu_frequency_metrics
 
