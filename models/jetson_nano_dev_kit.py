@@ -64,7 +64,7 @@ def get_jetson_nano_dev_kit_storage_metrics(storage_metrics):
     return storage_metrics
 
 def get_jetson_nano_dev_kit_ram_metrics(ram_metrics):
-    _ram_metrics = utils.run_command_and_get_output("free -m")
+    _ram_metrics = utils.run_command_and_get_output("cat /proc/meminfo")
     ram_metrics["error"] = _ram_metrics["error"]
 
     if ram_metrics["error"] == True:
