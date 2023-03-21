@@ -7,6 +7,8 @@ def get_jetson_nano_dev_kit_energy_metrics(energy_metrics):
     
     energy_metrics["error"] = out_tot_energy["error"] or out_cpu_energy["error"] or out_gpu_energy["error"]
 
+    print("out_tot_energy", out_tot_energy)
+
     energy_metrics["total"] = utils.parseToFloat(out_tot_energy["out_value"])
     energy_metrics["cpu"] = utils.parseToFloat(out_cpu_energy["out_value"])
     energy_metrics["gpu"] = utils.parseToFloat(out_gpu_energy["out_value"])
