@@ -71,6 +71,20 @@ class Energon:
         # ----------------- JETSON_NANO_DEV_KIT -----------------
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
             return jetson_nano_dev_kit.get_jetson_nano_dev_kit_storage_metrics(storage_metrics)
+        
+    def get_ram_metrics(self):
+        ram_metrics = {}
+
+        if not self.detected_model in constants.COMPLIANT_MODELS:
+            ram_metrics["error"] = False
+            ram_metrics["total"] = "Error: Model not supported"
+            ram_metrics["free"] = "Error: Model not supported"
+            ram_metrics["available"] = "Error: Model not supported"
+            return ram_metrics
+
+        # ----------------- JETSON_NANO_DEV_KIT -----------------
+        if self.detected_model == constants.JETSON_NANO_DEV_KIT:
+            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_ram_metrics(ram_metrics)
 
 if __name__ == '__main__':
     energon = Energon()
@@ -78,7 +92,9 @@ if __name__ == '__main__':
     energy_metrics = energon.get_energy_metrics()
     cpu_frequency_metrics = energon.get_cpu_frequency_metrics()
     storage_metrics = energon.get_storage_metrics()
+    ram_metrics = energon.get_ram_metrics()
     print("detected_model: ", detected_model)
     print("energy_metrics: ", energy_metrics)
     print("cpu_frequency_metrics: ", cpu_frequency_metrics)
     print("storage_metrics: ", storage_metrics)
+    print("ram_metrics: ", ram_metrics)

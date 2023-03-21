@@ -62,3 +62,18 @@ def get_jetson_nano_dev_kit_storage_metrics(storage_metrics):
         storage_metrics["available"] = storage_metrics["available"] + utils.parseToFloat(line.split()[3])
 
     return storage_metrics
+
+def get_jetson_nano_dev_kit_ram_metrics(ram_metrics):
+    _ram_metrics = utils.run_command_and_get_output("free -m")
+    ram_metrics["error"] = _ram_metrics["error"]
+
+    if ram_metrics["error"] == True:
+        ram_metrics["out_value"] = _ram_metrics["out_value"]
+        return ram_metrics
+    
+    matched_lines = [line for line in _ram_metrics["out_value"].split('\n') if line.startswith("Mem")]
+    ram_metrics["total"] = utils.parseToFloat(matched_lines[0].split()[1])
+    ram_metrics["used"] = utils.parseToFloat(matched_lines[1].split()[1])
+    ram_metrics["available"] = utils.parseToFloat(matched_lines[2].split()[1])
+
+    return ram_metrics
