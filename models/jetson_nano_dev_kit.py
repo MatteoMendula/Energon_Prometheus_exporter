@@ -45,6 +45,9 @@ def get_jetson_nano_dev_kit_storage_metrics(storage_metrics):
     
     matched_lines = [line for line in _storage_metrics["out_value"].split('\n') if line.startswith("/dev")]
     storage_metrics["devices"] = {}
+    storage_metrics["total"] = 0
+    storage_metrics["used"] = 0
+    storage_metrics["available"] = 0
 
     for line in matched_lines:
         # keeping track of all storage devices
