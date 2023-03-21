@@ -1,4 +1,4 @@
-from Energon_Prometheus_exporter import utils
+import utils
 
 def get_jetson_nano_dev_kit_energy_metrics(energy_metrics):
     out_tot_energy = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power0_input")
@@ -13,20 +13,20 @@ def get_jetson_nano_dev_kit_energy_metrics(energy_metrics):
     
     return energy_metrics
 
-def get_jetson_nano_dev_kit_cpu_frequency(cpu_frquency_metrics):
+def get_jetson_nano_dev_kit_cpu_frequency(cpu_frequency_metrics):
     core_0 = utils.run_command_and_get_output("cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq")
     core_1 = utils.run_command_and_get_output("cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq")
     core_2 = utils.run_command_and_get_output("cat /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq")
     core_3 = utils.run_command_and_get_output("cat /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq")
 
-    cpu_frquency_metrics["error"] = core_0["error"] or core_1["error"] or core_2["error"] or core_3["error"]
+    cpu_frequency_metrics["error"] = core_0["error"] or core_1["error"] or core_2["error"] or core_3["error"]
 
-    cpu_frquency_metrics["total"] = utils.parseToFloat(core_0["out_value"])
-    cpu_frquency_metrics["cpu"] = utils.parseToFloat(core_1["out_value"])
-    cpu_frquency_metrics["gpu"] = utils.parseToFloat(core_2["out_value"])
-    cpu_frquency_metrics["gpu"] = utils.parseToFloat(core_3["out_value"])
-    
-    return cpu_frquency_metrics
+    cpu_frequency_metrics["total"] = utils.parseToFloat(core_0["out_value"])
+    cpu_frequency_metrics["cpu"] = utils.parseToFloat(core_1["out_value"])
+    cpu_frequency_metrics["gpu"] = utils.parseToFloat(core_2["out_value"])
+    cpu_frequency_metrics["gpu"] = utils.parseToFloat(core_3["out_value"])
+
+    return cpu_frequency_metrics
 
 def get_jetson_nano_dev_kit_n_cpus(n_proc):
     _n_proc = utils.run_command_and_get_output("nproc")
