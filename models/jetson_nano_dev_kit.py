@@ -30,6 +30,29 @@ def get_jetson_nano_dev_kit_cpu_frequency(cpu_frequency_metrics):
 
     return cpu_frequency_metrics
 
+def get_jetson_nano_dev_kit_cpu_load_percentage(cpu_load_metrics):
+    _cpu_load = utils.run_command_and_get_output("cat /proc/stat")
+    cpu_load_metrics["error"] = False
+
+    if cpu_load_metrics["error"] == True:
+        cpu_load_metrics["out_value"] = _cpu_load["out_value"]
+        return cpu_load_metrics
+    
+    matched_lines = [utils.parseToFloat(line) for line in cpu_load_metrics["out_value"].split('\n') if line.startswith("cpu")]
+    cpu_load_metrics_tot = [utils.parseToFloat(amount) for amount in matched_lines[0].split()]
+    cpu_load_metrics_core_0 = [utils.parseToFloat(amount) for amount in matched_lines[0].split()]
+    cpu_load_metrics_core_1 = [utils.parseToFloat(amount) for amount in matched_lines[1].split()]
+    cpu_load_metrics_core_2 = [utils.parseToFloat(amount) for amount in matched_lines[2].split()]
+    cpu_load_metrics_core_3 = [utils.parseToFloat(amount) for amount in matched_lines[3].split()]
+
+    cpu_load_metrics["total"] = sum(cpu_load_metrics_tot[2:]) / cpu_load_metrics_tot[5]
+    cpu_load_metrics["core_0"] = sum(cpu_load_metrics_core_0[2:]) / cpu_load_metrics_core_0[5]
+    cpu_load_metrics["core_1"] = sum(cpu_load_metrics_core_1[2:]) / cpu_load_metrics_core_1[5]
+    cpu_load_metrics["core_2"] = sum(cpu_load_metrics_core_2[2:]) / cpu_load_metrics_core_2[5]
+    cpu_load_metrics["core_3"] = sum(cpu_load_metrics_core_3[2:]) / cpu_load_metrics_core_3[5]
+
+    return cpu_load_metrics
+
 def get_jetson_nano_dev_kit_n_cpus(n_proc):
     _n_proc = utils.run_command_and_get_output("nproc")
     n_proc["error"] = _n_proc["error"]

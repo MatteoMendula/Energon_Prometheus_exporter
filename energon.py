@@ -45,6 +45,22 @@ class Energon:
         # ----------------- JETSON_NANO_DEV_KIT -----------------
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
             return jetson_nano_dev_kit.get_jetson_nano_dev_kit_cpu_frequency(cpu_frquency_metrics)
+        
+    def get_cpu_load_metrics(self):
+        cpu_load_metrics = {}
+
+        if not self.detected_model in constants.COMPLIANT_MODELS:
+            cpu_load_metrics["error"] = False
+            cpu_load_metrics["total"] = "Error: Model not supported"
+            cpu_load_metrics["core_0"] = "Error: Model not supported"
+            cpu_load_metrics["core_1"] = "Error: Model not supported"
+            cpu_load_metrics["core_2"] = "Error: Model not supported"
+            cpu_load_metrics["core_3"] = "Error: Model not supported"
+            return cpu_load_metrics
+
+        # ----------------- JETSON_NANO_DEV_KIT -----------------
+        if self.detected_model == constants.JETSON_NANO_DEV_KIT:
+            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_cpu_load_percentage(cpu_load_metrics)
 
     def n_proc(self):
         n_proc = {}
@@ -91,10 +107,14 @@ if __name__ == '__main__':
     detected_model = energon.detected_model
     energy_metrics = energon.get_energy_metrics()
     cpu_frequency_metrics = energon.get_cpu_frequency_metrics()
+    cpu_load_metrics = energon.get_cpu_load_metrics()
+    n_proc = energon.n_proc()
     storage_metrics = energon.get_storage_metrics()
     ram_metrics = energon.get_ram_metrics()
     print("detected_model: ", detected_model)
     print("energy_metrics: ", energy_metrics)
     print("cpu_frequency_metrics: ", cpu_frequency_metrics)
+    print("cpu_load_metrics: ", cpu_load_metrics)
+    print("n_proc: ", n_proc)
     print("storage_metrics: ", storage_metrics)
     print("ram_metrics: ", ram_metrics)
