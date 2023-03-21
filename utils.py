@@ -13,6 +13,9 @@ def run_command_and_get_output(command):
     # execute the command 
     try:
         command_out_value_bytes = subprocess.run(_command, stdout=subprocess.PIPE, encoding='utf-8')
+
+        print("command_out_value_bytes", command_out_value_bytes)
+
         command_out_value_string_cleaned = str(command_out_value_bytes.stdout)[2:-3]
         command_output["out_value"] = command_out_value_string_cleaned
         command_output["error"] = False
