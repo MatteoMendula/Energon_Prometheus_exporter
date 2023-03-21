@@ -1,5 +1,8 @@
 import subprocess
 import re
+import os
+
+DEBUG_MODE = os.environ.get('DEBUG_MODE', False)
 
 """Run the command and return the output as a string."""
 def run_command_and_get_output(command):
@@ -14,7 +17,7 @@ def run_command_and_get_output(command):
     try:
         command_out_value_bytes = subprocess.run(_command, stdout=subprocess.PIPE, encoding='utf-8')
 
-        print("command_out_value_bytes", command_out_value_bytes)
+        DEBUG_MODE and print("command_out_value_bytes", command_out_value_bytes)
 
         command_out_value_string_cleaned = str(command_out_value_bytes.stdout)[:-1]
         command_output["out_value"] = command_out_value_string_cleaned
