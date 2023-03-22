@@ -8,8 +8,6 @@ def get_jetson_nano_dev_kit_energy_metrics(energy_metrics):
     
     energy_metrics["error"] = out_tot_energy["error"] or out_cpu_energy["error"] or out_gpu_energy["error"]
 
-    print("out_tot_energy", out_tot_energy)
-
     energy_metrics["total"] = utils.parseToFloat(out_tot_energy["out_value"])
     energy_metrics["cpu"] = utils.parseToFloat(out_cpu_energy["out_value"])
     energy_metrics["gpu"] = utils.parseToFloat(out_gpu_energy["out_value"])
@@ -134,3 +132,24 @@ def get_jetson_nano_dev_kit_ram_metrics(ram_metrics):
     ram_metrics["available"] = utils.parseToFloat(matched_lines[2].split()[1])
 
     return ram_metrics
+
+def get_jetson_nano_dev_kit_gpu_metrics(gpu_metrics):
+
+    gpu_load_possible_commands = [ "cat /sys/devices/57000000.gpu/load", "cat /sys/devices/gpu.0/load", "cat /sys/devices/platform/host1x/57000000.gpu/load" ]
+
+    _gpu_command_output = None
+
+    for command in gpu_load_possible_commands:
+        _gpu_command_output = utils.run_command_and_get_output(command)
+        if _gpu_command_output["error"] == False:
+            break
+
+    # if all commands failed, return last error
+    gpu_metrics["error"] = _gpu_command_output["error"]
+    if gpu_metrics["error"] == True:
+        gpu_metrics["out_value"] = _gpu_command_output["out_value"]
+        return gpu_metrics
+    
+    gpu_metrics["out_value"] = utils.parseToFloat(_gpu_command_output["out_value"])
+    
+    return gpu_metrics

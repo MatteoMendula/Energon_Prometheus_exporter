@@ -101,6 +101,18 @@ class Energon:
         # ----------------- JETSON_NANO_DEV_KIT -----------------
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
             return jetson_nano_dev_kit.get_jetson_nano_dev_kit_ram_metrics(ram_metrics)
+        
+    def get_gpu_load(self):
+        gpu_load = {}
+
+        if not self.detected_model in constants.COMPLIANT_MODELS:
+            gpu_load["error"] = False
+            gpu_load["total"] = "Error: Model not supported"
+            return gpu_load
+
+        # ----------------- JETSON_NANO_DEV_KIT -----------------
+        if self.detected_model == constants.JETSON_NANO_DEV_KIT:
+            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_gpu_load(gpu_load)
 
 if __name__ == '__main__':
     energon = Energon()
@@ -111,6 +123,7 @@ if __name__ == '__main__':
     n_proc = energon.n_proc()
     storage_metrics = energon.get_storage_metrics()
     ram_metrics = energon.get_ram_metrics()
+    gpu_load = energon.get_gpu_load()
     print("detected_model: ", detected_model)
     print("energy_metrics: ", energy_metrics)
     print("cpu_frequency_metrics: ", cpu_frequency_metrics)
@@ -118,3 +131,4 @@ if __name__ == '__main__':
     print("n_proc: ", n_proc)
     print("storage_metrics: ", storage_metrics)
     print("ram_metrics: ", ram_metrics)
+    print("gpu_load: ", gpu_load)
