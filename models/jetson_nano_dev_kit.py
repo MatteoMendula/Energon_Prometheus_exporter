@@ -79,6 +79,10 @@ def get_jetson_nano_dev_kit_cpu_load_percentage(cpu_load_metrics):
     
     second_read = get_idle_and_total_cpu_load(_cpu_load_2["out_value"])
 
+    # debug
+    first_read["idle"]["total"] = 0
+    first_read["total"]["total"] = 0
+
     return {
         "total": {(1 - (second_read["idle"]["total"] - first_read["idle"]["total"]) / (second_read["total"]["total"] - first_read["total"]["total"])) * 100},
         "core_0": {(1 - (second_read["idle"]["core_0"] - first_read["idle"]["core_0"]) / (second_read["total"]["core_0"] - first_read["total"]["core_0"])) * 100},
