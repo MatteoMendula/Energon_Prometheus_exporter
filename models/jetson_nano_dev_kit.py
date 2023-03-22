@@ -48,19 +48,17 @@ def get_jetson_nano_dev_kit_cpu_load_percentage(cpu_load_metrics):
         cpu_load_metrics_core_2 = [utils.parseToFloat(amount) for amount in matched_lines[2].split()]
         cpu_load_metrics_core_3 = [utils.parseToFloat(amount) for amount in matched_lines[3].split()]
 
-        idle_tot = cpu_load_metrics_tot[5]
+        idle_tot = cpu_load_metrics_tot[4]
         idle_core_0 = cpu_load_metrics_core_0[4]
         idle_core_1 = cpu_load_metrics_core_1[4]
         idle_core_2 = cpu_load_metrics_core_2[4]
         idle_core_3 = cpu_load_metrics_core_3[4]
 
-        total_tot = sum(cpu_load_metrics_tot[2:])
+        total_tot = sum(cpu_load_metrics_tot[1:])
         total_core_0 = sum(cpu_load_metrics_core_0[1:])
         total_core_1 = sum(cpu_load_metrics_core_1[1:])
         total_core_2 = sum(cpu_load_metrics_core_2[1:])
         total_core_3 = sum(cpu_load_metrics_core_3[1:])
-
-        print("cpu_load_metrics_tot", cpu_load_metrics_tot)
 
         return {
             "idle": {"total": idle_tot, "core_0": idle_core_0, "core_1": idle_core_1, "core_2": idle_core_2, "core_3": idle_core_3},
@@ -78,10 +76,6 @@ def get_jetson_nano_dev_kit_cpu_load_percentage(cpu_load_metrics):
         return cpu_load_metrics
     
     second_read = get_idle_and_total_cpu_load(_cpu_load_2["out_value"])
-
-    # debug
-    # first_read["idle"]["total"] = 0
-    # first_read["total"]["total"] = 0
 
     return {
         "total": {(1 - (second_read["idle"]["total"] - first_read["idle"]["total"]) / (second_read["total"]["total"] - first_read["total"]["total"])) * 100},
