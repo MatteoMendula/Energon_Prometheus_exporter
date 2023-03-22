@@ -74,7 +74,13 @@ class EnergonPrometheusExporter:
             time.sleep(self.polling_interval_seconds)
 
     def fetch(self):
-        self.device_info.info({"detected_model": self.energon.detected_model, "n_cores": self.energon.n_cores, "network_interfaces": self.energon.network_interfaces})
+        self.device_info.info(
+            {
+                "detected_model": self.energon.detected_model, 
+                "n_cores": str(int(self.energon.n_cores)), 
+                "network_interfaces": self.energon.network_interfaces
+            }
+        )
         # power metrics
         current_total_power_consumption = self.energon.get_energy_metrics()
         self.current_total_power_consumption.set(current_total_power_consumption["total"])
