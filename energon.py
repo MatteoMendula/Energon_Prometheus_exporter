@@ -120,7 +120,7 @@ class Energon:
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
             return jetson_nano_dev_kit.get_jetson_nano_dev_kit_ram_metrics(ram_metrics)
         
-    def get_gpu_load(self):
+    def get_gpu_metrics(self):
         gpu_load = {}
 
         if not self.detected_model in constants.COMPLIANT_MODELS:
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     cpu_load_metrics = energon.get_cpu_load_metrics()
     storage_metrics = energon.get_storage_metrics()
     ram_metrics = energon.get_ram_metrics()
-    gpu_load = energon.get_gpu_load()
+    gpu_metrics = energon.get_gpu_metrics()
     temperature_metrics = energon.get_temperature_metrics()
 
     print("detected_model: ", detected_model)
@@ -185,6 +185,6 @@ if __name__ == '__main__':
     print("cpu_load_metrics: ", cpu_load_metrics)
     print("storage_metrics: ", storage_metrics)
     print("ram_metrics: ", ram_metrics)
-    print("gpu_load: ", gpu_load)
+    print("gpu_metrics: ", gpu_metrics)
     print("temperature_metrics: ", temperature_metrics)
     print("network_metrics: ", network_metrics)
