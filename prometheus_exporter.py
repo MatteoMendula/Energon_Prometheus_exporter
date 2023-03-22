@@ -53,7 +53,7 @@ class EnergonPrometheusExporter:
 
         # ram metrics 
         self.ram_total = Gauge("energon_ram_total_bytes", "RAM total in bytes")
-        self.ram_free = Gauge("energon_ram_free_bytes", "RAM free in bytes")
+        self.ram_used = Gauge("energon_ram_used_bytes", "RAM used in bytes")
         self.ram_available = Gauge("energon_ram_available_bytes", "RAM available in bytes")
         self.ram_percent_used = Gauge("energon_ram_percent_used_percentage", "RAM percent used in %")
 
@@ -121,7 +121,7 @@ class EnergonPrometheusExporter:
         # ram metrics
         current_ram_metrics = self.energon.get_ram_metrics()
         self.ram_total = current_ram_metrics["total"]
-        self.ram_free = current_ram_metrics["free"]
+        self.ram_used = current_ram_metrics["used"]
         self.ram_available = current_ram_metrics["available"]
         self.ram_percent_used = current_ram_metrics["usage_percentage"]
 

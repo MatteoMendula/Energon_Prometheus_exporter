@@ -111,7 +111,7 @@ class Energon:
         if not self.detected_model in constants.COMPLIANT_MODELS:
             ram_metrics["error"] = True
             ram_metrics["total"] = constants.ERROR_MODEL_NOT_SUPPORTED
-            ram_metrics["free"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            ram_metrics["used"] = constants.ERROR_MODEL_NOT_SUPPORTED
             ram_metrics["available"] = constants.ERROR_MODEL_NOT_SUPPORTED
             ram_metrics["usage_percentage"] = constants.ERROR_MODEL_NOT_SUPPORTED
             return ram_metrics
