@@ -116,14 +116,14 @@ class EnergonPrometheusExporter:
         self.storage_total = current_storage_metrics["total"]
         self.storage_used = current_storage_metrics["used"]
         self.storage_available = current_storage_metrics["available"]
-        self.storage_percent_used = current_storage_metrics["percent_used"]
+        self.storage_percent_used = current_storage_metrics["usage_percentage"]
 
         # ram metrics
         current_ram_metrics = self.energon.get_ram_metrics()
         self.ram_total = current_ram_metrics["total"]
         self.ram_free = current_ram_metrics["free"]
         self.ram_available = current_ram_metrics["available"]
-        self.ram_percent_used = current_ram_metrics["percent_used"]
+        self.ram_percent_used = current_ram_metrics["usage_percentage"]
 
         # gpu metrics
         self.gpu_total_percent_used = self.energon.get_gpu_metrics()["total_percent_used"]
