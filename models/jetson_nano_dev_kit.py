@@ -151,5 +151,24 @@ def get_jetson_nano_dev_kit_gpu_metrics(gpu_metrics):
         return gpu_metrics
     
     gpu_metrics["out_value"] = utils.parseToFloat(_gpu_command_output["out_value"])
-    
+
     return gpu_metrics
+
+def get_jetson_nano_dev_kit_temperature_metrics(temperature_metrics):
+    ao = utils.run_command_and_get_output("cat /sys/devices/virtual/thermal/thermal_zone0/temp")
+    cpu = utils.run_command_and_get_output("cat /sys/devices/virtual/thermal/thermal_zone1/temp")
+    gpu = utils.run_command_and_get_output("cat /sys/devices/virtual/thermal/thermal_zone2/temp")
+    pll = utils.run_command_and_get_output("cat /sys/devices/virtual/thermal/thermal_zone3/temp")
+    pmic = utils.run_command_and_get_output("cat /sys/devices/virtual/thermal/thermal_zone4/temp")
+    fan = utils.run_command_and_get_output("cat /sys/devices/virtual/thermal/thermal_zone5/temp")
+
+    temperature_metrics["error"] = ao["error"] or cpu["error"] or gpu["error"] or pll["error"] or pmic["error"] or fan["error"]
+    
+    temperature_metrics["ao"] = utils.parseToFloat(ao["out_value"])
+    temperature_metrics["cpu"] = utils.parseToFloat(cpu["out_value"])
+    temperature_metrics["gpu"] = utils.parseToFloat(gpu["out_value"])
+    temperature_metrics["pll"] = utils.parseToFloat(pll["out_value"])
+    temperature_metrics["pmic"] = utils.parseToFloat(pmic["out_value"])
+    temperature_metrics["fan"] = utils.parseToFloat(fan["out_value"])
+
+    return temperature_metrics

@@ -113,6 +113,24 @@ class Energon:
         # ----------------- JETSON_NANO_DEV_KIT -----------------
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
             return jetson_nano_dev_kit.get_jetson_nano_dev_kit_gpu_metrics(gpu_load)
+        
+    def get_temperature_metrics(self):
+        temperature_metrics = {}
+
+        if not self.detected_model in constants.COMPLIANT_MODELS:
+            temperature_metrics["error"] = False
+            temperature_metrics["ao"] = "Error: Model not supported"
+            temperature_metrics["cpu"] = "Error: Model not supported"
+            temperature_metrics["gpu"] = "Error: Model not supported"
+            temperature_metrics["pll"] = "Error: Model not supported"
+            temperature_metrics["pmic"] = "Error: Model not supported"
+            temperature_metrics["fan"] = "Error: Model not supported"
+
+            return temperature_metrics
+
+        # ----------------- JETSON_NANO_DEV_KIT -----------------
+        if self.detected_model == constants.JETSON_NANO_DEV_KIT:
+            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_temperature_metrics(temperature_metrics)
 
 if __name__ == '__main__':
     energon = Energon()
@@ -124,6 +142,7 @@ if __name__ == '__main__':
     storage_metrics = energon.get_storage_metrics()
     ram_metrics = energon.get_ram_metrics()
     gpu_load = energon.get_gpu_load()
+    temperature_metrics = energon.get_temperature_metrics()
     print("detected_model: ", detected_model)
     print("energy_metrics: ", energy_metrics)
     print("cpu_frequency_metrics: ", cpu_frequency_metrics)
@@ -132,3 +151,4 @@ if __name__ == '__main__':
     print("storage_metrics: ", storage_metrics)
     print("ram_metrics: ", ram_metrics)
     print("gpu_load: ", gpu_load)
+    print("temperature_metrics: ", temperature_metrics)
