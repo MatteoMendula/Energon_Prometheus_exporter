@@ -125,7 +125,7 @@ class Energon:
 
         if not self.detected_model in constants.COMPLIANT_MODELS:
             gpu_load["error"] = True
-            gpu_load["total"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            gpu_load["usage"] = constants.ERROR_MODEL_NOT_SUPPORTED
             return gpu_load
 
         # ----------------- JETSON_NANO_DEV_KIT -----------------

@@ -126,7 +126,7 @@ class EnergonPrometheusExporter:
         self.ram_percent_used = current_ram_metrics["usage_percentage"]
 
         # gpu metrics
-        self.gpu_total_percent_used = self.energon.get_gpu_metrics()["total_percent_used"]
+        self.gpu_total_percent_used = self.energon.get_gpu_metrics()["usage"]
 
         # temperature metrics
         current_temperature_metrics = self.energon.get_temperature_metrics()

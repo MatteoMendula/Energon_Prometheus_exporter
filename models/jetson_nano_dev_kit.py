@@ -151,10 +151,10 @@ def get_jetson_nano_dev_kit_gpu_metrics(gpu_metrics):
     # if all commands failed, return last error
     gpu_metrics["error"] = _gpu_command_output["error"]
     if gpu_metrics["error"] == True:
-        gpu_metrics["out_value"] = _gpu_command_output["out_value"]
+        gpu_metrics["usage"] = _gpu_command_output["out_value"]
         return gpu_metrics
     
-    gpu_metrics["out_value"] = utils.parseToFloat(_gpu_command_output["out_value"])
+    gpu_metrics["usage"] = utils.parseToFloat(_gpu_command_output["out_value"])
 
     return gpu_metrics
 
