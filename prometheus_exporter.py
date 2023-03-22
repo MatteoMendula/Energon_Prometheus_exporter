@@ -87,14 +87,14 @@ class EnergonPrometheusExporter:
         self.current_gpu_power_consumption = current_total_power_consumption["gpu"]
 
         # network metrics
-        self.network_metrics_eth0_rx_packets = self.energon.get_network_metrics()["eth0"]["rx_packets_per_seconds"]
-        self.network_metrics_eth0_rx_bytes = self.energon.get_network_metrics()["eth0"]["rx_bytes_per_seconds"]
-        self.network_metrics_eth0_rx_errors = self.energon.get_network_metrics()["eth0"]["rx_errors_per_seconds"]
-        self.network_metrics_eth0_rx_dropped = self.energon.get_network_metrics()["eth0"]["rx_dropped_per_seconds"]
-        self.network_metrics_eth0_tx_packets = self.energon.get_network_metrics()["eth0"]["tx_packets_per_seconds"]
-        self.network_metrics_eth0_tx_bytes = self.energon.get_network_metrics()["eth0"]["tx_bytes_per_seconds"]
-        self.network_metrics_eth0_tx_errors = self.energon.get_network_metrics()["eth0"]["tx_errors_per_seconds"]
-        self.network_metrics_eth0_tx_dropped = self.energon.get_network_metrics()["eth0"]["tx_dropped_per_seconds"]
+        self.network_metrics_eth0_rx_packets = self.energon.get_network_metrics()["eth0"]["rx_packets"]
+        self.network_metrics_eth0_rx_bytes = self.energon.get_network_metrics()["eth0"]["rx_bytes"]
+        self.network_metrics_eth0_rx_errors = self.energon.get_network_metrics()["eth0"]["rx_errors"]
+        self.network_metrics_eth0_rx_dropped = self.energon.get_network_metrics()["eth0"]["rx_dropped"]
+        self.network_metrics_eth0_tx_packets = self.energon.get_network_metrics()["eth0"]["tx_packets"]
+        self.network_metrics_eth0_tx_bytes = self.energon.get_network_metrics()["eth0"]["tx_bytes"]
+        self.network_metrics_eth0_tx_errors = self.energon.get_network_metrics()["eth0"]["tx_errors"]
+        self.network_metrics_eth0_tx_dropped = self.energon.get_network_metrics()["eth0"]["tx_dropped"]
 
         # cpu frequency metrics
         current_cpu_frequency_metrics = self.energon.get_cpu_frequency_metrics()
