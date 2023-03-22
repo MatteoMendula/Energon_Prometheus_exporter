@@ -1,4 +1,5 @@
 import utils
+import time
 
 def get_jetson_nano_dev_kit_energy_metrics(energy_metrics):
     out_tot_energy = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power0_input")
@@ -31,26 +32,58 @@ def get_jetson_nano_dev_kit_cpu_frequency(cpu_frequency_metrics):
     return cpu_frequency_metrics
 
 def get_jetson_nano_dev_kit_cpu_load_percentage(cpu_load_metrics):
-    _cpu_load = utils.run_command_and_get_output("cat /proc/stat")
+    
+    _cpu_load_1 = utils.run_command_and_get_output("cat /proc/stat")
     cpu_load_metrics["error"] = False
-
     if cpu_load_metrics["error"] == True:
-        cpu_load_metrics["out_value"] = _cpu_load["out_value"]
+        cpu_load_metrics["out_value"] = _cpu_load_1["out_value"]
+        return cpu_load_metrics
+
+    def get_idle_and_total_cpu_load(proc_stat_out_value):
+        matched_lines = [line for line in cpu_load_metrics["out_value"].split('\n') if line.startswith("cpu")]
+        
+        cpu_load_metrics_tot = [utils.parseToFloat(amount) for amount in matched_lines[0].split()]
+        cpu_load_metrics_core_0 = [utils.parseToFloat(amount) for amount in matched_lines[0].split()]
+        cpu_load_metrics_core_1 = [utils.parseToFloat(amount) for amount in matched_lines[1].split()]
+        cpu_load_metrics_core_2 = [utils.parseToFloat(amount) for amount in matched_lines[2].split()]
+        cpu_load_metrics_core_3 = [utils.parseToFloat(amount) for amount in matched_lines[3].split()]
+
+        idle_tot = cpu_load_metrics_tot[5]
+        idle_core_0 = cpu_load_metrics_core_0[5]
+        idle_core_1 = cpu_load_metrics_core_1[5]
+        idle_core_2 = cpu_load_metrics_core_2[5]
+        idle_core_3 = cpu_load_metrics_core_3[5]
+
+        total_tot = sum(cpu_load_metrics_tot[2:])
+        total_core_0 = sum(cpu_load_metrics_core_0[2:])
+        total_core_1 = sum(cpu_load_metrics_core_1[2:])
+        total_core_2 = sum(cpu_load_metrics_core_2[2:])
+        total_core_3 = sum(cpu_load_metrics_core_3[2:])
+
+        return {
+            "idle": {"total": idle_tot, "core_0": idle_core_0, "core_1": idle_core_1, "core_2": idle_core_2, "core_3": idle_core_3},
+            "total": {"total": total_tot, "core_0": total_core_0, "core_1": total_core_1, "core_2": total_core_2, "core_3": total_core_3}
+        }
+        
+    first_read = get_idle_and_total_cpu_load(_cpu_load_1["out_value"])
+
+    time.sleep(1)
+
+    _cpu_load_2 = utils.run_command_and_get_output("cat /proc/stat")
+    cpu_load_metrics["error"] = False
+    if cpu_load_metrics["error"] == True:
+        cpu_load_metrics["out_value"] = _cpu_load_2["out_value"]
         return cpu_load_metrics
     
-    matched_lines = [line for line in _cpu_load["out_value"].split('\n') if line.startswith("cpu")]
-    
-    cpu_load_metrics_tot = [utils.parseToFloat(amount) for amount in matched_lines[0].split()]
-    cpu_load_metrics_core_0 = [utils.parseToFloat(amount) for amount in matched_lines[0].split()]
-    cpu_load_metrics_core_1 = [utils.parseToFloat(amount) for amount in matched_lines[1].split()]
-    cpu_load_metrics_core_2 = [utils.parseToFloat(amount) for amount in matched_lines[2].split()]
-    cpu_load_metrics_core_3 = [utils.parseToFloat(amount) for amount in matched_lines[3].split()]
+    second_read = get_idle_and_total_cpu_load(_cpu_load_2["out_value"])
 
-    cpu_load_metrics["total"] = sum(cpu_load_metrics_tot[2:]) / cpu_load_metrics_tot[5]
-    cpu_load_metrics["core_0"] = sum(cpu_load_metrics_core_0[2:]) / cpu_load_metrics_core_0[5]
-    cpu_load_metrics["core_1"] = sum(cpu_load_metrics_core_1[2:]) / cpu_load_metrics_core_1[5]
-    cpu_load_metrics["core_2"] = sum(cpu_load_metrics_core_2[2:]) / cpu_load_metrics_core_2[5]
-    cpu_load_metrics["core_3"] = sum(cpu_load_metrics_core_3[2:]) / cpu_load_metrics_core_3[5]
+    return {
+        "total": {(1 - (second_read["idle"]["total"] - first_read["idle"]["total"]) / (second_read["total"]["total"] - first_read["total"]["total"])) * 100},
+        "core_0": {(1 - (second_read["idle"]["core_0"] - first_read["idle"]["core_0"]) / (second_read["total"]["core_0"] - first_read["total"]["core_0"])) * 100},
+        "core_1": {(1 - (second_read["idle"]["core_1"] - first_read["idle"]["core_1"]) / (second_read["total"]["core_1"] - first_read["total"]["core_1"])) * 100},
+        "core_2": {(1 - (second_read["idle"]["core_2"] - first_read["idle"]["core_2"]) / (second_read["total"]["core_2"] - first_read["total"]["core_2"])) * 100},
+        "core_3": {(1 - (second_read["idle"]["core_3"] - first_read["idle"]["core_3"]) / (second_read["total"]["core_3"] - first_read["total"]["core_3"])) * 100}
+    }
 
     return cpu_load_metrics
 
