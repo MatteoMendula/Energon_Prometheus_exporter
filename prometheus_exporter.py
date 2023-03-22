@@ -78,7 +78,7 @@ class EnergonPrometheusExporter:
             {
                 "detected_model": self.energon.detected_model, 
                 "n_cores": str(int(self.energon.n_cores)), 
-                # "network_interfaces": self.energon.network_interfaces
+                "network_interfaces": ' '.join(str(e) for e in self.energon.network_interfaces)
             }
         )
         # power metrics
