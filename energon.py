@@ -112,7 +112,7 @@ class Energon:
 
         # ----------------- JETSON_NANO_DEV_KIT -----------------
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
-            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_gpu_load(gpu_load)
+            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_gpu_metrics(gpu_load)
 
 if __name__ == '__main__':
     energon = Energon()
