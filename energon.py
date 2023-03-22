@@ -20,6 +20,19 @@ class Energon:
         else:  
             return constants.UNKNOWN_MODEL
         
+    def get_network_metrics(self):
+        network_metrics = {}
+
+        if not self.detected_model in constants.COMPLIANT_MODELS:
+            network_metrics["error"] = True
+            network_metrics["rx"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            network_metrics["tx"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            return network_metrics
+
+        # ----------------- JETSON_NANO_DEV_KIT -----------------
+        if self.detected_model == constants.JETSON_NANO_DEV_KIT:
+            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_network_metrics(network_metrics, self.network_interfaces)
+
     def get_energy_metrics(self):
         energy_metrics = {}
 
@@ -85,6 +98,7 @@ class Energon:
             storage_metrics["total"] = constants.ERROR_MODEL_NOT_SUPPORTED
             storage_metrics["used"] = constants.ERROR_MODEL_NOT_SUPPORTED
             storage_metrics["available"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            storage_metrics["usage_percentage"] = constants.ERROR_MODEL_NOT_SUPPORTED
             return storage_metrics
 
         # ----------------- JETSON_NANO_DEV_KIT -----------------
@@ -99,6 +113,7 @@ class Energon:
             ram_metrics["total"] = constants.ERROR_MODEL_NOT_SUPPORTED
             ram_metrics["free"] = constants.ERROR_MODEL_NOT_SUPPORTED
             ram_metrics["available"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            ram_metrics["usage_percentage"] = constants.ERROR_MODEL_NOT_SUPPORTED
             return ram_metrics
 
         # ----------------- JETSON_NANO_DEV_KIT -----------------
@@ -147,24 +162,13 @@ class Energon:
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
             return jetson_nano_dev_kit.get_jetson_nano_dev_kit_network_interfaces(network_interfaces)
 
-    def get_network_metrics(self):
-        network_metrics = {}
-
-        if not self.detected_model in constants.COMPLIANT_MODELS:
-            network_metrics["error"] = True
-            network_metrics["rx"] = constants.ERROR_MODEL_NOT_SUPPORTED
-            network_metrics["tx"] = constants.ERROR_MODEL_NOT_SUPPORTED
-            return network_metrics
-
-        # ----------------- JETSON_NANO_DEV_KIT -----------------
-        if self.detected_model == constants.JETSON_NANO_DEV_KIT:
-            return jetson_nano_dev_kit.get_jetson_nano_dev_kit_network_metrics(network_metrics, self.network_interfaces)
 
 if __name__ == '__main__':
     energon = Energon()
     detected_model = energon.detected_model
     n_core = energon.n_cores
     network_interfaces = energon.network_interfaces
+    network_metrics = energon.get_network_metrics()
     energy_metrics = energon.get_energy_metrics()
     cpu_frequency_metrics = energon.get_cpu_frequency_metrics()
     cpu_load_metrics = energon.get_cpu_load_metrics()
@@ -172,7 +176,6 @@ if __name__ == '__main__':
     ram_metrics = energon.get_ram_metrics()
     gpu_load = energon.get_gpu_load()
     temperature_metrics = energon.get_temperature_metrics()
-    network_metrics = energon.get_network_metrics()
 
     print("detected_model: ", detected_model)
     print("n_core: ", n_core)

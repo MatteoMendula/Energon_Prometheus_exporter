@@ -103,6 +103,7 @@ def get_jetson_nano_dev_kit_storage_metrics(storage_metrics):
     storage_metrics["total"] = 0
     storage_metrics["used"] = 0
     storage_metrics["available"] = 0
+    storage_metrics["usage_percentage"] = 0
 
     for line in matched_lines:
         # keeping track of all storage devices
@@ -110,11 +111,13 @@ def get_jetson_nano_dev_kit_storage_metrics(storage_metrics):
         storage_metrics["devices"][line.split()[0]]["total"] = utils.parseToFloat(line.split()[1])
         storage_metrics["devices"][line.split()[0]]["used"] = utils.parseToFloat(line.split()[2])
         storage_metrics["devices"][line.split()[0]]["available"] = utils.parseToFloat(line.split()[3])
+        storage_metrics["devices"][line.split()[0]]["usage_percentage"] = (storage_metrics["devices"][line.split()[0]]["used"] / storage_metrics["devices"][line.split()[0]]["total"]) * 100
 
         # summing up all available storage
         storage_metrics["total"] = storage_metrics["total"] + utils.parseToFloat(line.split()[1])
         storage_metrics["used"] = storage_metrics["used"] + utils.parseToFloat(line.split()[2])
         storage_metrics["available"] = storage_metrics["available"] + utils.parseToFloat(line.split()[3])
+        storage_metrics["usage_percentage"] = (storage_metrics["used"] / storage_metrics["total"]) * 100
 
     return storage_metrics
 
@@ -130,6 +133,7 @@ def get_jetson_nano_dev_kit_ram_metrics(ram_metrics):
     ram_metrics["total"] = utils.parseToFloat(matched_lines[0].split()[1])
     ram_metrics["used"] = utils.parseToFloat(matched_lines[1].split()[1])
     ram_metrics["available"] = utils.parseToFloat(matched_lines[2].split()[1])
+    ram_metrics["usage_percentage"] = (ram_metrics["used"] / ram_metrics["total"]) * 100
 
     return ram_metrics
 
