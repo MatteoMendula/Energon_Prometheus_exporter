@@ -60,6 +60,8 @@ def get_jetson_nano_dev_kit_cpu_load_percentage(cpu_load_metrics):
         total_core_2 = sum(cpu_load_metrics_core_2[2:])
         total_core_3 = sum(cpu_load_metrics_core_3[2:])
 
+        print("(idle_tot, total_tot)", (idle_tot, total_tot))
+
         return {
             "idle": {"total": idle_tot, "core_0": idle_core_0, "core_1": idle_core_1, "core_2": idle_core_2, "core_3": idle_core_3},
             "total": {"total": total_tot, "core_0": total_core_0, "core_1": total_core_1, "core_2": total_core_2, "core_3": total_core_3}
