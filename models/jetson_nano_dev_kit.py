@@ -55,10 +55,10 @@ def get_jetson_nano_dev_kit_cpu_load_percentage(cpu_load_metrics):
         idle_core_3 = cpu_load_metrics_core_3[5]
 
         total_tot = sum(cpu_load_metrics_tot[2:])
-        total_core_0 = sum(cpu_load_metrics_core_0[2:])
-        total_core_1 = sum(cpu_load_metrics_core_1[2:])
-        total_core_2 = sum(cpu_load_metrics_core_2[2:])
-        total_core_3 = sum(cpu_load_metrics_core_3[2:])
+        total_core_0 = sum(cpu_load_metrics_core_0[3:])
+        total_core_1 = sum(cpu_load_metrics_core_1[3:])
+        total_core_2 = sum(cpu_load_metrics_core_2[3:])
+        total_core_3 = sum(cpu_load_metrics_core_3[3:])
 
         print("(idle_tot, total_tot)", (idle_tot, total_tot))
 
@@ -80,11 +80,11 @@ def get_jetson_nano_dev_kit_cpu_load_percentage(cpu_load_metrics):
     second_read = get_idle_and_total_cpu_load(_cpu_load_2["out_value"])
 
     # debug
-    first_read["idle"]["total"] = 0
-    first_read["total"]["total"] = 0
+    # first_read["idle"]["total"] = 0
+    # first_read["total"]["total"] = 0
 
     return {
-        "total": {(1 - (second_read["idle"]["total"] - first_read["idle"]["total"]) / (second_read["total"]["total"] - first_read["total"]["total"])) },
+        "total": {(1 - (second_read["idle"]["total"] - first_read["idle"]["total"]) / (second_read["total"]["total"] - first_read["total"]["total"])) * 100},
         "core_0": {(1 - (second_read["idle"]["core_0"] - first_read["idle"]["core_0"]) / (second_read["total"]["core_0"] - first_read["total"]["core_0"])) * 100},
         "core_1": {(1 - (second_read["idle"]["core_1"] - first_read["idle"]["core_1"]) / (second_read["total"]["core_1"] - first_read["total"]["core_1"])) * 100},
         "core_2": {(1 - (second_read["idle"]["core_2"] - first_read["idle"]["core_2"]) / (second_read["total"]["core_2"] - first_read["total"]["core_2"])) * 100},
