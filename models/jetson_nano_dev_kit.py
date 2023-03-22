@@ -152,7 +152,8 @@ def get_jetson_nano_dev_kit_gpu_metrics(gpu_metrics):
         gpu_metrics["usage"] = _gpu_command_output["out_value"]
         return gpu_metrics
     
-    gpu_metrics["usage"] = utils.parseToFloat(_gpu_command_output["out_value"])
+    # The GPU load is stored as a percentage * 10, e.g 256 = 25.6%
+    gpu_metrics["usage"] = utils.parseToFloat(_gpu_command_output["out_value"]) / 10
 
     return gpu_metrics
 
