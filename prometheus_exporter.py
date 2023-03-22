@@ -76,66 +76,67 @@ class EnergonPrometheusExporter:
             time.sleep(self.polling_interval_seconds)
 
     def fetch(self):
-        self.jetson_model = self.energon.detected_model
-        self.n_cores = self.energon.n_cores
-        self.network_interfaces = self.energon.network_interfaces
+        self.jetson_model.set(self.energon.detected_model)
+        self.n_cores.set(self.energon.n_cores)
+        self.network_interfaces.set(self.energon.network_interfaces)
 
         # power metrics
         current_total_power_consumption = self.energon.get_energy_metrics()
-        self.current_total_power_consumption = current_total_power_consumption["total"]
-        self.current_cpu_power_consumption = current_total_power_consumption["cpu"]
-        self.current_gpu_power_consumption = current_total_power_consumption["gpu"]
+        self.current_total_power_consumption.set(current_total_power_consumption["total"])
+        self.current_cpu_power_consumption.set(current_total_power_consumption["cpu"])
+        self.current_gpu_power_consumption.set(current_total_power_consumption["gpu"])
 
         # network metrics
-        self.network_metrics_eth0_rx_packets = self.energon.get_network_metrics()["eth0"]["rx_packets"]
-        self.network_metrics_eth0_rx_bytes = self.energon.get_network_metrics()["eth0"]["rx_bytes"]
-        self.network_metrics_eth0_rx_errors = self.energon.get_network_metrics()["eth0"]["rx_errors"]
-        self.network_metrics_eth0_rx_dropped = self.energon.get_network_metrics()["eth0"]["rx_dropped"]
-        self.network_metrics_eth0_tx_packets = self.energon.get_network_metrics()["eth0"]["tx_packets"]
-        self.network_metrics_eth0_tx_bytes = self.energon.get_network_metrics()["eth0"]["tx_bytes"]
-        self.network_metrics_eth0_tx_errors = self.energon.get_network_metrics()["eth0"]["tx_errors"]
-        self.network_metrics_eth0_tx_dropped = self.energon.get_network_metrics()["eth0"]["tx_dropped"]
+        current_network_metrics = self.energon.get_network_metrics()
+        self.network_metrics_eth0_rx_packets.set(current_network_metrics["eth0"]["rx_packets"])
+        self.network_metrics_eth0_rx_bytes.set(current_network_metrics["eth0"]["rx_bytes"])
+        self.network_metrics_eth0_rx_errors.set(current_network_metrics["eth0"]["rx_errors"])
+        self.network_metrics_eth0_rx_dropped.set(current_network_metrics["eth0"]["rx_dropped"])
+        self.network_metrics_eth0_tx_packets.set(current_network_metrics["eth0"]["tx_packets"])
+        self.network_metrics_eth0_tx_bytes.set(current_network_metrics["eth0"]["tx_bytes"])
+        self.network_metrics_eth0_tx_errors.set(current_network_metrics["eth0"]["tx_errors"])
+        self.network_metrics_eth0_tx_dropped.set(current_network_metrics["eth0"]["tx_dropped"])
 
         # cpu frequency metrics
         current_cpu_frequency_metrics = self.energon.get_cpu_frequency_metrics()
-        self.cpu_core_0_frequency = current_cpu_frequency_metrics["core_0"]
-        self.cpu_core_1_frequency = current_cpu_frequency_metrics["core_1"]
-        self.cpu_core_2_frequency = current_cpu_frequency_metrics["core_2"]
-        self.cpu_core_3_frequency = current_cpu_frequency_metrics["core_3"]
+        self.cpu_core_0_frequency.set(current_cpu_frequency_metrics["core_0"])
+        self.cpu_core_1_frequency.set(current_cpu_frequency_metrics["core_1"])
+        self.cpu_core_2_frequency.set(current_cpu_frequency_metrics["core_2"])
+        self.cpu_core_3_frequency.set(current_cpu_frequency_metrics["core_3"])
 
         # cpu load metrics
         current_cpu_load_metrics = self.energon.get_cpu_load_metrics()
-        self.cpu_total_load = current_cpu_load_metrics["total"]
-        self.cpu_core_0_load = current_cpu_load_metrics["core_0"]
-        self.cpu_core_1_load = current_cpu_load_metrics["core_1"]
-        self.cpu_core_2_load = current_cpu_load_metrics["core_2"]
-        self.cpu_core_3_load = current_cpu_load_metrics["core_3"]
+        self.cpu_total_load.set(current_cpu_load_metrics["total"])
+        self.cpu_core_0_load.set(current_cpu_load_metrics["core_0"])
+        self.cpu_core_1_load.set(current_cpu_load_metrics["core_1"])
+        self.cpu_core_2_load.set(current_cpu_load_metrics["core_2"])
+        self.cpu_core_3_load.set(current_cpu_load_metrics["core_3"])
 
         # storage metrics
         current_storage_metrics = self.energon.get_storage_metrics()
-        self.storage_total = current_storage_metrics["total"]
-        self.storage_used = current_storage_metrics["used"]
-        self.storage_available = current_storage_metrics["available"]
-        self.storage_percent_used = current_storage_metrics["usage_percentage"]
+        self.storage_total.set(current_storage_metrics["total"])
+        self.storage_used.set(current_storage_metrics["used"])
+        self.storage_available.set(current_storage_metrics["available"])
+        self.storage_percent_used.set(current_storage_metrics["usage_percentage"])
 
         # ram metrics
         current_ram_metrics = self.energon.get_ram_metrics()
-        self.ram_total = current_ram_metrics["total"]
-        self.ram_used = current_ram_metrics["used"]
-        self.ram_available = current_ram_metrics["available"]
-        self.ram_percent_used = current_ram_metrics["usage_percentage"]
+        self.ram_total.set(current_ram_metrics["total"])
+        self.ram_used.set(current_ram_metrics["used"])
+        self.ram_available.set(current_ram_metrics["available"])
+        self.ram_percent_used.set(current_ram_metrics["usage_percentage"])
 
         # gpu metrics
-        self.gpu_total_percent_used = self.energon.get_gpu_metrics()["usage"]
+        self.gpu_total_percent_used.set(self.energon.get_gpu_metrics()["usage"])
 
         # temperature metrics
         current_temperature_metrics = self.energon.get_temperature_metrics()
-        self.temperature_ao = current_temperature_metrics["ao"]
-        self.temperature_cpu = current_temperature_metrics["cpu"]
-        self.temperature_gpu = current_temperature_metrics["gpu"]
-        self.temperature_pll = current_temperature_metrics["pll"]
-        self.temperature_pmic = current_temperature_metrics["pmic"]
-        self.temperature_fan = current_temperature_metrics["fan"]
+        self.temperature_ao.set(current_temperature_metrics["ao"])
+        self.temperature_cpu.set(current_temperature_metrics["cpu"])
+        self.temperature_gpu.set(current_temperature_metrics["gpu"])
+        self.temperature_pll.set(current_temperature_metrics["pll"])
+        self.temperature_pmic.set(current_temperature_metrics["pmic"])
+        self.temperature_fan.set(current_temperature_metrics["fan"])
 
     
     def run(self):
