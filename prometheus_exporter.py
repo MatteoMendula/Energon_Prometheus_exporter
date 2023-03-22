@@ -143,6 +143,7 @@ class EnergonPrometheusExporter:
     def run(self):
         """Run the metrics server"""
         start_http_server(self.app_port)
+        print("Energon prometheus server running on port " + str(self.app_port))
         self.run_metrics_loop()
 
 if __name__ == "__main__":
