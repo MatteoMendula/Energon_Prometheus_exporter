@@ -172,3 +172,50 @@ def get_jetson_nano_dev_kit_temperature_metrics(temperature_metrics):
     temperature_metrics["fan"] = utils.parseToFloat(fan["out_value"])
 
     return temperature_metrics
+
+def get_jetson_nano_dev_kit_network_interfaces(network_interfaces):
+    _network_interfaces = utils.run_command_and_get_output("ls /sys/class/net/")
+
+    network_interfaces["error"] = _network_interfaces["error"]
+    if network_interfaces["error"] == True:
+        network_interfaces["out_value"] = _network_interfaces["out_value"]
+        return network_interfaces
+    
+    network_interfaces["available_networks"] = _network_interfaces["out_value"].split()
+
+    return network_interfaces
+
+def get_jetson_nano_dev_kit_network_metrics(network_metrics, network_interfaces):
+    errors_list = []
+    for interface in network_interfaces:
+        rx_packets = utils.run_command_and_get_output("cat /sys/class/net/" + interface + "/statistics/rx_packets")
+        tx_packets = utils.run_command_and_get_output("cat /sys/class/net/" + interface + "/statistics/tx_packets")
+        rx_bytes = utils.run_command_and_get_output("cat /sys/class/net/" + interface + "/statistics/rx_bytes")
+        tx_bytes = utils.run_command_and_get_output("cat /sys/class/net/" + interface + "/statistics/tx_bytes")
+        rx_errors = utils.run_command_and_get_output("cat /sys/class/net/" + interface + "/statistics/rx_errors")
+        tx_errors = utils.run_command_and_get_output("cat /sys/class/net/" + interface + "/statistics/tx_errors")
+        rx_dropped = utils.run_command_and_get_output("cat /sys/class/net/" + interface + "/statistics/rx_dropped")
+        tx_dropped = utils.run_command_and_get_output("cat /sys/class/net/" + interface + "/statistics/tx_dropped")
+
+        errors_list.append(rx_packets["error"])
+        errors_list.append(tx_packets["error"])
+        errors_list.append(rx_bytes["error"])
+        errors_list.append(tx_bytes["error"])
+        errors_list.append(rx_errors["error"])
+        errors_list.append(tx_errors["error"])
+        errors_list.append(rx_dropped["error"])
+        errors_list.append(tx_dropped["error"])
+
+        network_metrics[interface] = {}
+        network_metrics[interface]["rx_packets"] = utils.parseToFloat(rx_packets["out_value"])
+        network_metrics[interface]["tx_packets"] = utils.parseToFloat(tx_packets["out_value"])
+        network_metrics[interface]["rx_bytes"] = utils.parseToFloat(rx_bytes["out_value"])
+        network_metrics[interface]["tx_bytes"] = utils.parseToFloat(tx_bytes["out_value"])
+        network_metrics[interface]["rx_errors"] = utils.parseToFloat(rx_errors["out_value"])
+        network_metrics[interface]["tx_errors"] = utils.parseToFloat(tx_errors["out_value"])
+        network_metrics[interface]["rx_dropped"] = utils.parseToFloat(rx_dropped["out_value"])
+        network_metrics[interface]["tx_dropped"] = utils.parseToFloat(tx_dropped["out_value"])
+
+    network_metrics["error"] = any(errors_list)
+
+    return network_metrics
