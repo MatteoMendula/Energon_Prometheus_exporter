@@ -80,6 +80,7 @@ class EnergonPrometheusExporter:
         self.total_actual_amps = Gauge("energon_total_actual_amps", "Total actual amps")
 
     def TryToInstanciateActualMeter(self):
+        print("TryToInstanciateActualMeter at", sys.argv[1])
         regex = r"[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}"
         actual_meter = None
         is_actual_meter_connected = False
