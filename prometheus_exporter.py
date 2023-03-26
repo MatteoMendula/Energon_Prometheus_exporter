@@ -1,5 +1,8 @@
+import sys
+import re
 import time
 import energon
+import actualMeter
 from prometheus_client import start_http_server, Gauge, Info
 
 class EnergonPrometheusExporter:
@@ -10,6 +13,9 @@ class EnergonPrometheusExporter:
 
         # Start up the server to expose the metrics.
         self.energon = energon.Energon()
+
+        # ----------------- Try to instanciate actual meter -----------------
+        self.is_actual_meter_connected, self.actual_meter = self.TryToInstanciateActualMeter()
 
         # ----------------- Prometheus metrics to collect -----------------
         # static metrics
@@ -65,6 +71,24 @@ class EnergonPrometheusExporter:
         self.temperature_pll = Gauge("energon_temperature_pll_mC", "Temperature pll in mC")
         self.temperature_pmic = Gauge("energon_temperature_pmic_mC", "Temperature pmic in mC")
         self.temperature_fan = Gauge("energon_temperature_fan_mC", "Temperature fan in mC")
+
+        # actual metrics
+        self.total_actual_watts = Gauge("energon_total_actual_watts", "Total actual watts")
+        self.total_actual_volts = Gauge("energon_total_actual_volts", "Total actual volts")
+        self.total_actual_amps = Gauge("energon_total_actual_amps", "Total actual amps")
+
+    def TryToInstanciateActualMeter(self):
+        regex = r"[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}"
+        actual_meter = None
+        is_actual_meter_connected = False
+        if (len( sys.argv ) > 1 and (bool(re.match(regex, sys.argv[1])))):
+            try:
+                actual_meter = actualMeter.UM25C()
+                is_actual_meter_connected = True
+            except:
+                print("I will print this line of code if an error is encountered")
+
+        return (is_actual_meter_connected, actualMeter)
     
     def run_metrics_loop(self):
         """Metrics fetching loop"""
@@ -138,6 +162,12 @@ class EnergonPrometheusExporter:
         self.temperature_pll.set(current_temperature_metrics["pll"])
         self.temperature_pmic.set(current_temperature_metrics["pmic"])
         self.temperature_fan.set(current_temperature_metrics["fan"])
+
+        if self.is_actual_meter_connected:
+            current_actual_meter_metrics = self.actual_meter.query()
+            self.total_actual_watts.set(current_actual_meter_metrics["Volts"])
+            self.total_actual_volts.set(current_actual_meter_metrics["Watts"])
+            self.total_actual_amps.set(current_actual_meter_metrics["Amps"])
 
     
     def run(self):
