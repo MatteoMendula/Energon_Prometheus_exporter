@@ -82,17 +82,17 @@ class EnergonPrometheusExporter:
     def TryToInstanciateActualMeter(self):
         print("TryToInstanciateActualMeter at", sys.argv[1])
         regex = r"[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}"
-        self.actual_meter = None
+        actual_meter = None
         is_actual_meter_connected = False
         if (len( sys.argv ) > 1 and (bool(re.match(regex, sys.argv[1])))):
             connection_address = sys.argv[1]
             try:
-                self.actual_meter = actualMeter.UM25C(connection_address)
+                actual_meter = actualMeter.UM25C(connection_address)
                 is_actual_meter_connected = True
             except:
                 print("Actual meter not connected")
 
-        return (is_actual_meter_connected, actualMeter)
+        return (is_actual_meter_connected, actual_meter)
     
     def run_metrics_loop(self):
         """Metrics fetching loop"""
