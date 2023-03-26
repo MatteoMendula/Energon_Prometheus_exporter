@@ -16,7 +16,7 @@ parser.add_argument(
     help="Number of seconds to run the stress test",
 )
 parser.add_argument(
-    "-r",
+    "-s",
     "--stayalive",
     nargs="?",
     default=False,
