@@ -16,6 +16,14 @@ parser.add_argument(
     help="Number of seconds to run the stress test",
 )
 parser.add_argument(
+    "-r",
+    "--stayalive",
+    nargs="?",
+    default=False,
+    type=bool,
+    help="Number of seconds to run the stress test",
+)
+parser.add_argument(
     "-d",
     "--delay",
     nargs="?",
@@ -41,5 +49,5 @@ timeout = time.time() + args.runtime
 logging.info(f"Running GPU stress test loop [{args.runtime}s]")
 while True:
     x = x * (1.0 - x)
-    if time.time() > timeout:
+    if (not args.stayalive) and time.time() > timeout:
         sys.exit(os.EX_OK)
