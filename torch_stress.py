@@ -47,6 +47,8 @@ x = torch.linspace(0, 4, 16 * 1024 ** 2).cuda()
 timeout = time.time() + args.runtime
 
 logging.info(f"Running GPU stress test loop [{args.runtime}s]")
+logging.info(f"StayAlive GPU stress test loop [{args.stayalive}]")
+
 while True:
     x = x * (1.0 - x)
     if (not args.stayalive) and time.time() > timeout:
