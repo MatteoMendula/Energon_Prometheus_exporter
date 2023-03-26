@@ -85,8 +85,9 @@ class EnergonPrometheusExporter:
         actual_meter = None
         is_actual_meter_connected = False
         if (len( sys.argv ) > 1 and (bool(re.match(regex, sys.argv[1])))):
+            connection_address = sys.argv[1]
             try:
-                actual_meter = actualMeter.UM25C()
+                actual_meter = actualMeter.UM25C(connection_address)
                 is_actual_meter_connected = True
             except:
                 print("Actual meter not connected")
