@@ -89,7 +89,7 @@ class EnergonPrometheusExporter:
                 actual_meter = actualMeter.UM25C()
                 is_actual_meter_connected = True
             except:
-                print("I will print this line of code if an error is encountered")
+                print("Actual meter not connected")
 
         return (is_actual_meter_connected, actualMeter)
     
