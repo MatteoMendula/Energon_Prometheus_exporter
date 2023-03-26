@@ -43,3 +43,7 @@ class UM25C(object):
             d += self.sock.recv(130)
         data = self.processdata(d)
         return data
+    
+if __name__ == "__main__":
+    meter = UM25C("00:15:A3:00:55:02")
+    print(meter.query())

@@ -5,6 +5,8 @@ import energon
 import actualMeter
 from prometheus_client import start_http_server, Gauge, Info
 
+# example: sudo python3 prometheus_exporter.py 00:15:A3:00:55:02
+
 class EnergonPrometheusExporter:
 
     def __init__(self, app_port=9877, polling_interval_seconds=5):
