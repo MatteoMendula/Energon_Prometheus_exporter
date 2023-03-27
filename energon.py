@@ -38,9 +38,13 @@ class Energon:
 
         if not self.detected_model in constants.COMPLIANT_MODELS:
             energy_metrics["error"] = True
-            energy_metrics["total"] = constants.ERROR_MODEL_NOT_SUPPORTED
-            energy_metrics["cpu"] = constants.ERROR_MODEL_NOT_SUPPORTED
-            energy_metrics["gpu"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            energy_metrics["total_power"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            energy_metrics["cpu_power"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            energy_metrics["gpu_power"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            energy_metrics["total_voltage"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            energy_metrics["cpu_voltage"] = constants.ERROR_MODEL_NOT_SUPPORTED
+            energy_metrics["gpu_voltage"] = constants.ERROR_MODEL_NOT_SUPPORTED
+
             return energy_metrics
 
         # ----------------- JETSON_NANO_DEV_KIT -----------------

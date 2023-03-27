@@ -24,9 +24,13 @@ class EnergonPrometheusExporter:
         self.device_info = Info("energon_device_info", "Device info")
 
         # power metrics
-        self.current_total_power_consumption = Gauge("energon_total_power_consumption_mW", "Current total power consumption in milliwatts")
-        self.current_cpu_power_consumption = Gauge("energon_cpu_power_consumption_mW", "Current cpu power consumption in milliwatts")
-        self.current_gpu_power_consumption = Gauge("energon_gpu_power_consumption_mW", "Current gpu power consumption in milliwatts")
+        self.total_in_power = Gauge("energon_total_in_power_mW", "Current total power consumption in milliwatts")
+        self.cpu_in_power = Gauge("energon_cpu_in_power_mW", "Current cpu power consumption in milliwatts")
+        self.gpu_in_power = Gauge("energon_gpu_in_power_mW", "Current gpu power consumption in milliwatts")
+        # voltage metrics   
+        self.total_in_voltage = Gauge("energon_total_in_voltage_mV", "Current total voltage in millivolts")
+        self.cpu_in_voltage = Gauge("energon_cpu_in_voltage_mV", "Current cpu voltage in millivolts")
+        self.gpu_in_voltage = Gauge("energon_gpu_in_voltage_mV", "Current gpu voltage in millivolts")
         
         # network metrics
         self.network_metrics_eth0_rx_packets = Gauge("energon_network_metrics_eth0_rx_packets_per_seconds", "Network metrics eth0 rx_packets_per_seconds")
@@ -110,10 +114,14 @@ class EnergonPrometheusExporter:
             }
         )
         # power metrics
-        current_total_power_consumption = self.energon.get_energy_metrics()
-        self.current_total_power_consumption.set(current_total_power_consumption["total"])
-        self.current_cpu_power_consumption.set(current_total_power_consumption["cpu"])
-        self.current_gpu_power_consumption.set(current_total_power_consumption["gpu"])
+        energy_metrics = self.energon.get_energy_metrics()
+        self.total_in_power.set(energy_metrics["total_power"])
+        self.cpu_in_power.set(energy_metrics["cpu_power"])
+        self.gpu_in_power.set(energy_metrics["gpu_power"])
+
+        self.total_in_voltage.set(energy_metrics["total_voltage"])
+        self.cpu_in_voltage.set(energy_metrics["cpu_voltage"])
+        self.gpu_in_voltage.set(energy_metrics["gpu_voltage"])
 
         # network metrics
         current_network_metrics = self.energon.get_network_metrics()

@@ -2,15 +2,24 @@ import utils
 import time
 
 def get_jetson_nano_dev_kit_energy_metrics(energy_metrics):
-    out_tot_energy = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power0_input")
-    out_gpu_energy = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power1_input")
-    out_cpu_energy = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power2_input")
+    in_tot_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power0_input")
+    in_gpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power1_input")
+    in_cpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power2_input")
     
-    energy_metrics["error"] = out_tot_energy["error"] or out_cpu_energy["error"] or out_gpu_energy["error"]
+    in_tot_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_voltage0_input")
+    in_gpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_voltage1_input")
+    in_cpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_voltage2_input")
 
-    energy_metrics["total"] = utils.parseToFloat(out_tot_energy["out_value"])
-    energy_metrics["cpu"] = utils.parseToFloat(out_cpu_energy["out_value"])
-    energy_metrics["gpu"] = utils.parseToFloat(out_gpu_energy["out_value"])
+
+    energy_metrics["error"] = in_tot_power["error"] or in_gpu_power["error"] or in_cpu_power["error"] or in_tot_voltage["error"] or in_gpu_voltage["error"] or in_cpu_voltage["error"]
+
+    energy_metrics["total_power"] = utils.parseToFloat(in_tot_power["out_value"])
+    energy_metrics["cpu_power"] = utils.parseToFloat(in_gpu_power["out_value"])
+    energy_metrics["gpu_power"] = utils.parseToFloat(in_cpu_power["out_value"])
+
+    energy_metrics["total_voltage"] = utils.parseToFloat(in_tot_voltage["out_value"])
+    energy_metrics["cpu_voltage"] = utils.parseToFloat(in_gpu_voltage["out_value"])
+    energy_metrics["gpu_voltage"] = utils.parseToFloat(in_cpu_voltage["out_value"])
     
     return energy_metrics
 
