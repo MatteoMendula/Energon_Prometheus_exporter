@@ -1,6 +1,10 @@
 import utils
 import time
 
+# Jetson Nano Dev Kit Model 
+# author: @MatteoMendula
+# date: 2020-05-20
+
 def get_jetson_nano_dev_kit_energy_metrics(energy_metrics):
     in_tot_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power0_input")
     in_gpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power1_input")

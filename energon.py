@@ -2,6 +2,11 @@ import utils
 import constants
 from models import jetson_nano_dev_kit
 
+# Energon - A Prometheus exporter for energy consumption metrics of embedded devices
+# This class is the main class of the project. It is responsible for detecting the model of the device and calling the appropriate functions to get the metrics.
+# author: @MatteoMendula
+# date: 2020-05-20
+
 class Energon:
     def __init__(self):
         self.name = 'Energon Prometheus Exporter'
