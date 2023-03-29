@@ -116,12 +116,14 @@ def get_jetson_nano_dev_kit_storage_metrics(storage_metrics):
     storage_metrics["available"] = 0
     storage_metrics["usage_percentage"] = 0
 
+
+    # parse every metric in MB
     for line in matched_lines:
         # keeping track of all storage devices
         storage_metrics["devices"][line.split()[0]] = {}
-        storage_metrics["devices"][line.split()[0]]["total"] = utils.parseToFloat(line.split()[1])
-        storage_metrics["devices"][line.split()[0]]["used"] = utils.parseToFloat(line.split()[2])
-        storage_metrics["devices"][line.split()[0]]["available"] = utils.parseToFloat(line.split()[3])
+        storage_metrics["devices"][line.split()[0]]["total"] = utils.parseToFloat(line.split()[1]) * utils.getConversionToMBCoefficient(line.split()[1])
+        storage_metrics["devices"][line.split()[0]]["used"] = utils.parseToFloat(line.split()[2]) * utils.getConversionToMBCoefficient(line.split()[2])
+        storage_metrics["devices"][line.split()[0]]["available"] = utils.parseToFloat(line.split()[3]) * utils.getConversionToMBCoefficient(line.split()[3])
         storage_metrics["devices"][line.split()[0]]["usage_percentage"] = (storage_metrics["devices"][line.split()[0]]["used"] / storage_metrics["devices"][line.split()[0]]["total"]) * 100
 
         # summing up all available storage
