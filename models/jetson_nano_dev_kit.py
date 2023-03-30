@@ -18,8 +18,8 @@ def get_jetson_nano_dev_kit_energy_metrics(energy_metrics):
     energy_metrics["error"] = in_tot_power["error"] or in_gpu_power["error"] or in_cpu_power["error"] or in_tot_voltage["error"] or in_gpu_voltage["error"] or in_cpu_voltage["error"]
 
     energy_metrics["total_power"] = utils.parseToFloat(in_tot_power["out_value"])
-    energy_metrics["cpu_power"] = utils.parseToFloat(in_gpu_power["out_value"])
-    energy_metrics["gpu_power"] = utils.parseToFloat(in_cpu_power["out_value"])
+    energy_metrics["gpu_power"] = utils.parseToFloat(in_gpu_power["out_value"])
+    energy_metrics["cpu_power"] = utils.parseToFloat(in_cpu_power["out_value"])
 
     energy_metrics["total_voltage"] = utils.parseToFloat(in_tot_voltage["out_value"])
     energy_metrics["cpu_voltage"] = utils.parseToFloat(in_gpu_voltage["out_value"])
