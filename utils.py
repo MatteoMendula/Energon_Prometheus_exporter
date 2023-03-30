@@ -47,3 +47,13 @@ def parseToFloat(value):
     _value = remove_characters_from_string(_value)
     return float(_value)
 
+def getConversionToMBCoefficient(string):
+    if "K" in string:
+        return 0.001
+    elif "M" in string:
+        return 1
+    elif "G" in string:
+        return 1000
+    else:
+        return 1
+
