@@ -2,7 +2,7 @@ import sys
 import re
 import time
 import energon
-import actualMeter
+# import actualMeter
 from prometheus_client import start_http_server, Gauge, Info
 
 # example: sudo python3 prometheus_exporter.py 00:15:A3:00:55:02
@@ -15,9 +15,10 @@ class EnergonPrometheusExporter:
 
         # Start up the server to expose the metrics.
         self.energon = energon.Energon()
+        self.energon.instantiated_model.refresh_all_metrics()
 
         # ----------------- Try to instanciate actual meter -----------------
-        self.is_actual_meter_connected, self.actual_meter = self.TryToInstanciateActualMeter()
+        # self.is_actual_meter_connected, self.actual_meter = self.TryToInstanciateActualMeter()
 
         # ----------------- Prometheus metrics to collect -----------------
         # static metrics
@@ -31,31 +32,35 @@ class EnergonPrometheusExporter:
         self.total_in_voltage = Gauge("energon_total_in_voltage_mV", "Current total voltage in millivolts")
         self.cpu_in_voltage = Gauge("energon_cpu_in_voltage_mV", "Current cpu voltage in millivolts")
         self.gpu_in_voltage = Gauge("energon_gpu_in_voltage_mV", "Current gpu voltage in millivolts")
-        
+        # battery
+        self.battery_percentage = Gauge("energon_battery_percentage", "Current battery percentage")
+
         # network metrics
-        self.network_metrics_eth0_rx_packets = Gauge("energon_network_metrics_eth0_rx_packets_per_seconds", "Network metrics eth0 rx_packets_per_seconds")
-        self.network_metrics_eth0_rx_bytes = Gauge("energon_network_metrics_eth0_rx_bytes_per_seconds", "Network metrics eth0 rx_bytes_per_seconds")
-        self.network_metrics_eth0_rx_errors = Gauge("energon_network_metrics_eth0_rx_errors_per_seconds", "Network metrics eth0 rx_errors_per_seconds")
-        self.network_metrics_eth0_rx_dropped = Gauge("energon_network_metrics_eth0_rx_dropped_per_seconds", "Network metrics eth0 rx_dropped_per_seconds")
-        self.network_metrics_eth0_tx_packets = Gauge("energon_network_metrics_eth0_tx_packets_per_seconds", "Network metrics eth0 tx_packets_per_seconds")
-        self.network_metrics_eth0_tx_bytes = Gauge("energon_network_metrics_eth0_tx_bytes_per_seconds", "Network metrics eth0 tx_bytes_per_seconds")
-        self.network_metrics_eth0_tx_errors = Gauge("energon_network_metrics_eth0_tx_errors_per_seconds", "Network metrics eth0 tx_errors_per_seconds")
-        self.network_metrics_eth0_tx_dropped = Gauge("energon_network_metrics_eth0_tx_dropped_per_seconds", "Network metrics eth0 tx_dropped_per_seconds")
+        for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
+            setattr(self, "network_metrics_{}_rx_packets".format(network_interface_name), Gauge("energon_network_metrics_{}_rx_packets_per_seconds".format(network_interface_name), "Network metrics {} rx_packets_per_seconds".format(network_interface_name)))
+            setattr(self, "network_metrics_{}_rx_bytes".format(network_interface_name), Gauge("energon_network_metrics_{}_rx_bytes_per_seconds".format(network_interface_name), "Network metrics {} rx_bytes_per_seconds".format(network_interface_name)))
+            setattr(self, "network_metrics_{}_rx_errors".format(network_interface_name), Gauge("energon_network_metrics_{}_rx_errors_per_seconds".format(network_interface_name), "Network metrics {} rx_errors_per_seconds".format(network_interface_name)))
+            setattr(self, "network_metrics_{}_rx_dropped".format(network_interface_name), Gauge("energon_network_metrics_{}_rx_dropped_per_seconds".format(network_interface_name), "Network metrics {} rx_dropped_per_seconds".format(network_interface_name)))
+            setattr(self, "network_metrics_{}_tx_packets".format(network_interface_name), Gauge("energon_network_metrics_{}_tx_packets_per_seconds".format(network_interface_name), "Network metrics {} tx_packets_per_seconds".format(network_interface_name)))
+            setattr(self, "network_metrics_{}_tx_bytes".format(network_interface_name), Gauge("energon_network_metrics_{}_tx_bytes_per_seconds".format(network_interface_name), "Network metrics {} tx_bytes_per_seconds".format(network_interface_name)))
+            setattr(self, "network_metrics_{}_tx_errors".format(network_interface_name), Gauge("energon_network_metrics_{}_tx_errors_per_seconds".format(network_interface_name), "Network metrics {} tx_errors_per_seconds".format(network_interface_name)))
+            setattr(self, "network_metrics_{}_tx_dropped".format(network_interface_name), Gauge("energon_network_metrics_{}_tx_dropped_per_seconds".format(network_interface_name), "Network metrics {} tx_dropped_per_seconds".format(network_interface_name)))
 
         # cpu frequency metrics
-        self.cpu_core_0_frequency = Gauge("energon_cpu_core_0_MHz", "CPU core_0 frequency in MHz")
-        self.cpu_core_1_frequency = Gauge("energon_cpu_core_1_MHz", "CPU core_1 frequency in MHz")
-        self.cpu_core_2_frequency = Gauge("energon_cpu_core_2_MHz", "CPU core_2 frequency in MHz")
-        self.cpu_core_3_frequency = Gauge("energon_cpu_core_3_MHz", "CPU core_3 frequency in MHz")
+        for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
+            setattr(self, "cpu_{}_frequency".format(core), Gauge("energon_cpu_core_{}_MHz".format(core), "CPU core_{} frequency in MHz".format(core)))
 
-        # cpu load metrics
-        self.cpu_total_load = Gauge("energon_cpu_total_load_percentage", "CPU total load in %")
-        self.cpu_core_0_load = Gauge("energon_cpu_core_0_load_percentage", "CPU core_0 load in %")
-        self.cpu_core_1_load = Gauge("energon_cpu_core_1_load_percentage", "CPU core_1 load in %")
-        self.cpu_core_2_load = Gauge("energon_cpu_core_2_load_percentage", "CPU core_2 load in %")
-        self.cpu_core_3_load = Gauge("energon_cpu_core_3_load_percentage", "CPU core_3 load in %")
+        # cpu usage metrics
+        self.cpu_total_usage_percentage = Gauge("energon_cpu_total_usage_percentage", "CPU total usage in %")
+        for core in self.energon.instantiated_model.cpu_usage_percentage["_keys"]:
+            setattr(self, "cpu_{}_usage_percentage".format(core), Gauge("energon_cpu_core_{}_usage_percentage_percentage".format(core), "CPU core_{} usage in %".format(core)))
 
         # storage metrics
+        for device_name in self.energon.instantiated_model.storage_metrics["devices"]:
+            setattr(self, "storage_{}_total".format(device_name), Gauge("energon_storage_{}_total_bytes".format(device_name), "Storage {} total in bytes".format(device_name)))
+            setattr(self, "storage_{}_used".format(device_name), Gauge("energon_storage_{}_used_bytes".format(device_name), "Storage {} used in bytes".format(device_name)))
+            setattr(self, "storage_{}_available".format(device_name), Gauge("energon_storage_{}_available_bytes".format(device_name), "Storage {} available in bytes".format(device_name)))
+            setattr(self, "storage_{}_percent_used".format(device_name), Gauge("energon_storage_{}_percent_used_percentage".format(device_name), "Storage {} percent used in %".format(device_name)))
         self.storage_total = Gauge("energon_storage_total_bytes", "Storage total in bytes")
         self.storage_used = Gauge("energon_storage_used_bytes", "Storage used in bytes")
         self.storage_available = Gauge("energon_storage_available_bytes", "Storage available in bytes")
@@ -68,40 +73,37 @@ class EnergonPrometheusExporter:
         self.ram_percent_used = Gauge("energon_ram_percent_used_percentage", "RAM percent used in %")
 
         # gpu metrics
-        self.gpu_total_percent_used = Gauge("energon_gpu_total_percent_used_percentage", "GPU total percent used in %")
+        self.gpu_total_usage_percentage = Gauge("energon_gpu_total_usage_percentage_percentage", "GPU total percent used in %")
 
         # temperature metrics
-        self.temperature_ao = Gauge("energon_temperature_ao_mC", "Temperature ao in mC")
-        self.temperature_cpu = Gauge("energon_temperature_cpu_mC", "Temperature cpu in mC")
-        self.temperature_gpu = Gauge("energon_temperature_gpu_mC", "Temperature gpu in mC")
-        self.temperature_pll = Gauge("energon_temperature_pll_mC", "Temperature pll in mC")
-        self.temperature_pmic = Gauge("energon_temperature_pmic_mC", "Temperature pmic in mC")
-        self.temperature_fan = Gauge("energon_temperature_fan_mC", "Temperature fan in mC")
+        for temp_metric in self.energon.instantiated_model.temperature_metrics["_keys"]:
+            setattr(self, "temperature_{}".format(temp_metric), Gauge("energon_temperature_{}_mC".format(temp_metric), "Temperature {} in mC".format(temp_metric)))
 
         # actual metrics
         self.total_actual_watts = Gauge("energon_total_actual_watts", "Total actual watts")
         self.total_actual_volts = Gauge("energon_total_actual_volts", "Total actual volts")
         self.total_actual_amps = Gauge("energon_total_actual_amps", "Total actual amps")
 
-    def TryToInstanciateActualMeter(self):
-        actual_meter = None
-        is_actual_meter_connected = False
-        if (len( sys.argv ) > 1 and (bool(re.match(regex, sys.argv[1])))):
-            print("TryToInstanciateActualMeter at", sys.argv[1])
-            regex = r"[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}"
-            connection_address = sys.argv[1]
-            try:
-                actual_meter = actualMeter.UM25C(connection_address)
-                is_actual_meter_connected = True
-            except:
-                print("Actual meter not connected")
+    # def TryToInstanciateActualMeter(self):
+    #     actual_meter = None
+    #     is_actual_meter_connected = False
+    #     if (len( sys.argv ) > 1 and (bool(re.match(regex, sys.argv[1])))):
+    #         print("TryToInstanciateActualMeter at", sys.argv[1])
+    #         regex = r"[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}"
+    #         connection_address = sys.argv[1]
+    #         try:
+    #             actual_meter = actualMeter.UM25C(connection_address)
+    #             is_actual_meter_connected = True
+    #         except:
+    #             print("Actual meter not connected")
 
-        return (is_actual_meter_connected, actual_meter)
+    #     return (is_actual_meter_connected, actual_meter)
     
     def run_metrics_loop(self):
         """Metrics fetching loop"""
 
         while True:
+            self.energon.instantiated_model.refresh_all_metrics()
             self.fetch()
             time.sleep(self.polling_interval_seconds)
 
@@ -109,79 +111,65 @@ class EnergonPrometheusExporter:
         self.device_info.info(
             {
                 "detected_model": self.energon.detected_model, 
-                "n_cores": str(int(self.energon.n_cores)), 
-                "network_interfaces": ' '.join(str(e) for e in self.energon.network_interfaces)
+                "n_proc": str(int(self.energon.instantiated_model.n_proc)), 
+                "network_interfaces": ' '.join(str(e) for e in self.energon.instantiated_model.network_interfaces)
             }
         )
         # power metrics
-        energy_metrics = self.energon.get_energy_metrics()
-        self.total_in_power.set(energy_metrics["total_power"])
-        self.cpu_in_power.set(energy_metrics["cpu_power"])
-        self.gpu_in_power.set(energy_metrics["gpu_power"])
+        self.total_in_power.set(self.energon.instantiated_model.energy_metrics["total_power"])
+        self.cpu_in_power.set(self.energon.instantiated_model.energy_metrics["cpu_power"])
+        self.gpu_in_power.set(self.energon.instantiated_model.energy_metrics["gpu_power"])
 
-        self.total_in_voltage.set(energy_metrics["total_voltage"])
-        self.cpu_in_voltage.set(energy_metrics["cpu_voltage"])
-        self.gpu_in_voltage.set(energy_metrics["gpu_voltage"])
+        self.total_in_voltage.set(self.energon.instantiated_model.energy_metrics["total_voltage"])
+        self.cpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["cpu_voltage"])
+        self.gpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["gpu_voltage"])
 
         # network metrics
-        current_network_metrics = self.energon.get_network_metrics()
-        self.network_metrics_eth0_rx_packets.set(current_network_metrics["eth0"]["rx_packets"])
-        self.network_metrics_eth0_rx_bytes.set(current_network_metrics["eth0"]["rx_bytes"])
-        self.network_metrics_eth0_rx_errors.set(current_network_metrics["eth0"]["rx_errors"])
-        self.network_metrics_eth0_rx_dropped.set(current_network_metrics["eth0"]["rx_dropped"])
-        self.network_metrics_eth0_tx_packets.set(current_network_metrics["eth0"]["tx_packets"])
-        self.network_metrics_eth0_tx_bytes.set(current_network_metrics["eth0"]["tx_bytes"])
-        self.network_metrics_eth0_tx_errors.set(current_network_metrics["eth0"]["tx_errors"])
-        self.network_metrics_eth0_tx_dropped.set(current_network_metrics["eth0"]["tx_dropped"])
-
+        for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
+            getattr(self, "network_metrics_{}_rx_packets".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["rx_packets"])
+            getattr(self, "network_metrics_{}_rx_bytes".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["rx_bytes"])
+            getattr(self, "network_metrics_{}_rx_errors".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["rx_errors"])
+            getattr(self, "network_metrics_{}_rx_dropped".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["rx_dropped"])
+            getattr(self, "network_metrics_{}_tx_packets".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["tx_packets"])
+            getattr(self, "network_metrics_{}_tx_bytes".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["tx_bytes"])
+            getattr(self, "network_metrics_{}_tx_errors".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["tx_errors"])
+            getattr(self, "network_metrics_{}_tx_dropped".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["tx_dropped"])
+        
         # cpu frequency metrics
-        current_cpu_frequency_metrics = self.energon.get_cpu_frequency_metrics()
-        self.cpu_core_0_frequency.set(current_cpu_frequency_metrics["core_0"])
-        self.cpu_core_1_frequency.set(current_cpu_frequency_metrics["core_1"])
-        self.cpu_core_2_frequency.set(current_cpu_frequency_metrics["core_2"])
-        self.cpu_core_3_frequency.set(current_cpu_frequency_metrics["core_3"])
+        for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
+            getattr(self, "cpu_{}_frequency".format(core)).set(self.energon.instantiated_model.cpu_frequency_metrics[core])
 
-        # cpu load metrics
-        current_cpu_load_metrics = self.energon.get_cpu_load_metrics()
-        self.cpu_total_load.set(current_cpu_load_metrics["total"])
-        self.cpu_core_0_load.set(current_cpu_load_metrics["core_0"])
-        self.cpu_core_1_load.set(current_cpu_load_metrics["core_1"])
-        self.cpu_core_2_load.set(current_cpu_load_metrics["core_2"])
-        self.cpu_core_3_load.set(current_cpu_load_metrics["core_3"])
+        # cpu usage metrics
+        for core in self.energon.instantiated_model.cpu_usage_percentage["_keys"]:
+            if core == "total":
+                continue
+            getattr(self, "cpu_{}_usage_percentage".format(core)).set(self.energon.instantiated_model.cpu_usage_percentage[core])
+        self.cpu_total_usage_percentage.set(self.energon.instantiated_model.cpu_usage_percentage["total"])
 
         # storage metrics
-        current_storage_metrics = self.energon.get_storage_metrics()
-        self.storage_total.set(current_storage_metrics["total"])
-        self.storage_used.set(current_storage_metrics["used"])
-        self.storage_available.set(current_storage_metrics["available"])
-        self.storage_percent_used.set(current_storage_metrics["usage_percentage"])
+        for device_name in self.energon.instantiated_model.storage_metrics["_keys"]:
+            getattr(self, "storage_{}_total".format(device_name)).set(self.energon.instantiated_model.storage_metrics["devices"][device_name]["total"])
+            getattr(self, "storage_{}_used".format(device_name)).set(self.energon.instantiated_model.storage_metrics["devices"][device_name]["used"])
+            getattr(self, "storage_{}_available".format(device_name)).set(self.energon.instantiated_model.storage_metrics["devices"][device_name]["available"])
+            getattr(self, "storage_{}_percent_used".format(device_name)).set(self.energon.instantiated_model.storage_metrics["devices"][device_name]["usage_percentage"])
+        self.storage_total.set(self.energon.instantiated_model.storage_metrics["total"])
+        self.storage_used.set(self.energon.instantiated_model.storage_metrics["used"])
+        self.storage_available.set(self.energon.instantiated_model.storage_metrics["available"])
+        self.storage_percent_used.set(self.energon.instantiated_model.storage_metrics["usage_percentage"])
 
         # ram metrics
-        current_ram_metrics = self.energon.get_ram_metrics()
-        self.ram_total.set(current_ram_metrics["total"])
-        self.ram_used.set(current_ram_metrics["used"])
-        self.ram_available.set(current_ram_metrics["available"])
-        self.ram_percent_used.set(current_ram_metrics["usage_percentage"])
+        self.ram_total.set(self.energon.instantiated_model.ram_metrics["total"])
+        self.ram_used.set(self.energon.instantiated_model.ram_metrics["used"])
+        self.ram_available.set(self.energon.instantiated_model.ram_metrics["available"])
+        self.ram_percent_used.set(self.energon.instantiated_model.ram_metrics["usage_percentage"])
 
         # gpu metrics
-        self.gpu_total_percent_used.set(self.energon.get_gpu_metrics()["usage"])
+        self.gpu_total_usage_percentage.set(self.energon.instantiated_model.gpu_usage_percentage)
 
         # temperature metrics
-        current_temperature_metrics = self.energon.get_temperature_metrics()
-        self.temperature_ao.set(current_temperature_metrics["ao"])
-        self.temperature_cpu.set(current_temperature_metrics["cpu"])
-        self.temperature_gpu.set(current_temperature_metrics["gpu"])
-        self.temperature_pll.set(current_temperature_metrics["pll"])
-        self.temperature_pmic.set(current_temperature_metrics["pmic"])
-        self.temperature_fan.set(current_temperature_metrics["fan"])
+        for temp_metric in self.energon.instantiated_model.temperature_metrics["_keys"]:
+            getattr(self, "temperature_{}".format(temp_metric)).set(self.energon.instantiated_model.temperature_metrics[temp_metric])
 
-        if self.is_actual_meter_connected:
-            current_actual_meter_metrics = self.actual_meter.query()
-            self.total_actual_watts.set(current_actual_meter_metrics["Volts"])
-            self.total_actual_volts.set(current_actual_meter_metrics["Watts"])
-            self.total_actual_amps.set(current_actual_meter_metrics["Amps"])
-
-    
     def run(self):
         """Run the metrics server"""
         start_http_server(self.app_port)

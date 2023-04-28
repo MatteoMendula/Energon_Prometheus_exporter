@@ -11,7 +11,7 @@ parser.add_argument(
     "-r",
     "--runtime",
     nargs="?",
-    default=300,
+    default=10,
     type=int,
     help="Number of seconds to run the stress test",
 )
