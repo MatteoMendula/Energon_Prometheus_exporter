@@ -47,7 +47,6 @@ class EnergonPrometheusExporter:
             setattr(self, "network_metrics_{}_tx_dropped".format(network_interface_name), Gauge("energon_network_metrics_{}_tx_dropped_per_seconds".format(network_interface_name), "Network metrics {} tx_dropped_per_seconds".format(network_interface_name)))
 
         # cpu frequency metrics
-        print(self.energon.instantiated_model.cpu_frequency_metrics)
         for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
             setattr(self, "cpu_{}_frequency".format(core), Gauge("energon_cpu_{}_MHz".format(core), "CPU {} frequency in MHz".format(core)))
 
