@@ -126,6 +126,9 @@ class EnergonPrometheusExporter:
         self.cpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["cpu_voltage"])
         self.gpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["gpu_voltage"])
 
+        # battery
+        self.battery_percentage.set(self.energon.instantiated_model.battery_percentage)
+
         # network metrics
         for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
             getattr(self, "network_metrics_{}_rx_packets".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["rx_packets"])
