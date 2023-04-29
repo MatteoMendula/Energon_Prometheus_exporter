@@ -83,6 +83,7 @@ class JetsonAgxXavier(GeneralModel):
 
         for command in gpu_load_possible_commands:
             _gpu_command_output = utils.run_command_and_get_output(command)
+            print("------------", _gpu_command_output["out_value"])
             if _gpu_command_output["error"] == False:
                 break
 
@@ -90,7 +91,6 @@ class JetsonAgxXavier(GeneralModel):
             self.gpu_usage_percentage = constants.ERROR_WHILE_READING_VALUE
             return 
     
-        print("------------", _gpu_command_output["out_value"])
 
         # The GPU load is stored as a percentage * 10, e.g 256 = 25.6%
         self.gpu_usage_percentage = utils.parseToFloat(_gpu_command_output["out_value"]) / 10
