@@ -48,12 +48,12 @@ class EnergonPrometheusExporter:
 
         # cpu frequency metrics
         for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
-            setattr(self, "cpu_{}_frequency".format(core), Gauge("energon_cpu_core_{}_MHz".format(core), "CPU core_{} frequency in MHz".format(core)))
+            setattr(self, "cpu_{}_frequency".format(core), Gauge("energon_cpu_{}_MHz".format(core), "CPU {} frequency in MHz".format(core)))
 
         # cpu usage metrics
         self.cpu_total_usage_percentage = Gauge("energon_cpu_total_usage_percentage", "CPU total usage in %")
         for core in self.energon.instantiated_model.cpu_usage_percentage["_keys"]:
-            setattr(self, "cpu_{}_usage_percentage".format(core), Gauge("energon_cpu_core_{}_usage_percentage_percentage".format(core), "CPU core_{} usage in %".format(core)))
+            setattr(self, "cpu_{}_usage_percentage".format(core), Gauge("energon_cpu_{}_usage_percentage".format(core), "CPU {} usage in %".format(core)))
 
         # storage metrics
         for device_name in self.energon.instantiated_model.storage_metrics["devices"]:
@@ -73,7 +73,7 @@ class EnergonPrometheusExporter:
         self.ram_percent_used = Gauge("energon_ram_percent_used_percentage", "RAM percent used in %")
 
         # gpu metrics
-        self.gpu_total_usage_percentage = Gauge("energon_gpu_total_usage_percentage_percentage", "GPU total percent used in %")
+        self.gpu_total_usage_percentage = Gauge("energon_gpu_total_usage_percentage", "GPU total percent used in %")
 
         # temperature metrics
         for temp_metric in self.energon.instantiated_model.temperature_metrics["_keys"]:
