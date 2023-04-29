@@ -13,20 +13,31 @@ class Ubuntu64(GeneralModel):
         super().__init__()
 
     def set_energy_metrics(self):
-        in_psys_power = utils.run_command_and_get_output("cat /sys/devices/virtual/powercap/intel-rapl/intel-rapl:1/energy_uj")     # micro Joules
-        in_cpu_power = utils.run_command_and_get_output("cat /sys/devices/virtual/powercap/intel-rapl/intel-rapl:0/energy_uj")      # micro Joules             
-        in_gpu_power = utils.run_command_and_get_output("nvidia-smi --query-gpu=power.draw --format=csv,noheader")                  # Watts (e.g. 19.67 W)
-
-        in_psys_power["out_value"] = constants.ERROR_WHILE_READING_VALUE if in_psys_power["error"] else utils.parse_micro_joules_string_watts_float(in_psys_power["out_value"]) 
-        in_cpu_power["out_value"] = constants.ERROR_WHILE_READING_VALUE if in_cpu_power["error"] else utils.parse_micro_joules_string_watts_float(in_cpu_power["out_value"])
-        in_gpu_power["out_value"] = constants.ERROR_WHILE_READING_VALUE if in_gpu_power["error"] else utils.parse_micro_joules_string_watts_float(in_gpu_power["out_value"])
+        in_psys_power_first = utils.run_command_and_get_output("cat /sys/devices/virtual/powercap/intel-rapl/intel-rapl:1/energy_uj")     # micro Joules
+        in_cpu_power_first = utils.run_command_and_get_output("cat /sys/devices/virtual/powercap/intel-rapl/intel-rapl:0/energy_uj")      # micro Joules             
         
+        time.sleep(1)
+
+        in_psys_power_second = utils.run_command_and_get_output("cat /sys/devices/virtual/powercap/intel-rapl/intel-rapl:1/energy_uj")    # micro Joules
+        in_cpu_power_second = utils.run_command_and_get_output("cat /sys/devices/virtual/powercap/intel-rapl/intel-rapl:0/energy_uj")     # micro Joules
+        
+        in_gpu_power = utils.run_command_and_get_output("nvidia-smi --query-gpu=power.draw --format=csv,noheader")                  # Watts (e.g. 19.67 W)
+        
+        if in_psys_power_first["error"] or in_cpu_power_first["error"] or in_psys_power_second["error"] or in_cpu_power_second["error"]:
+            in_psys_power = float("nan")
+            in_cpu_power = float("nan")
+        else:
+            in_psys_power = utils.parse_micro_joules_string_watts_float(in_psys_power_second["out_value"]) - utils.parse_micro_joules_string_watts_float(in_psys_power_first["out_value"])
+            in_cpu_power = utils.parse_micro_joules_string_watts_float(in_cpu_power_second["out_value"]) - utils.parse_micro_joules_string_watts_float(in_cpu_power_first["out_value"])
+        
+        in_gpu_power = float("nan") if in_gpu_power["error"] else utils.parseToFloat(in_gpu_power["out_value"])
+
         self.energy_metrics = {}
         self.energy_metrics["_keys"] = ["total_power", "gpu_power", "cpu_power", "total_voltage", "cpu_voltage", "gpu_voltage"]
 
-        self.energy_metrics["total_power"] = float("nan") if in_psys_power["error"] else in_psys_power["out_value"] + in_gpu_power["out_value"] + in_cpu_power["out_value"]
-        self.energy_metrics["gpu_power"] = in_gpu_power["out_value"]
-        self.energy_metrics["cpu_power"] = in_cpu_power["out_value"]
+        self.energy_metrics["total_power"] = in_psys_power + in_gpu_power + in_cpu_power
+        self.energy_metrics["cpu_power"] = in_cpu_power
+        self.energy_metrics["gpu_power"] = in_gpu_power
 
         self.energy_metrics["total_voltage"] = float("nan")
         self.energy_metrics["cpu_voltage"] = float("nan")
