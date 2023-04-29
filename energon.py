@@ -23,7 +23,7 @@ class Energon:
             return "Error in getting model %s" % out["out_value"]
         if "nvidia jetson nano developer kit" in out["out_value"].lower():
             return constants.JETSON_NANO_DEV_KIT
-        if "Jetson-AGX" in out["out_value"].lower():
+        if "jetson-agx" in out["out_value"].lower():
             return constants.JETSON_AGX_XAVIER
         
         # check if the device is a Ubuntu 64 bit
