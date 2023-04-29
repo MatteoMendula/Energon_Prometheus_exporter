@@ -53,6 +53,8 @@ class EnergonPrometheusExporter:
         # cpu usage metrics
         self.cpu_total_usage_percentage = Gauge("energon_cpu_total_usage_percentage", "CPU total usage in %")
         for core in self.energon.instantiated_model.cpu_usage_percentage["_keys"]:
+            if core == "total":
+                continue
             setattr(self, "cpu_{}_usage_percentage".format(core), Gauge("energon_cpu_{}_usage_percentage".format(core), "CPU {} usage in %".format(core)))
 
         # storage metrics
