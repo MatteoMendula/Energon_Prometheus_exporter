@@ -83,7 +83,7 @@ class JetsonAgxXavier(GeneralModel):
 
         for command in gpu_load_possible_commands:
             _gpu_command_output = utils.run_command_and_get_output(command)
-            print("------------", _gpu_command_output["out_value"])
+            print("------------", _gpu_command_output)
             if _gpu_command_output["error"] == False:
                 break
 
