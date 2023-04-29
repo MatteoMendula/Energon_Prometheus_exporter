@@ -118,3 +118,6 @@ class JetsonAgxXavier(GeneralModel):
         self.temperature_metrics["t_board"] = constants.ERROR_WHILE_READING_VALUE if t_board["error"] else utils.parseToFloat(t_board["out_value"])
         self.temperature_metrics["t_diode"] = constants.ERROR_WHILE_READING_VALUE if t_diode["error"] else utils.parseToFloat(t_diode["out_value"])
         self.temperature_metrics["iwlwifi"] = constants.ERROR_WHILE_READING_VALUE if iwlwifi["error"] else utils.parseToFloat(iwlwifi["out_value"])
+
+    def set_battery_percentage(self):
+        self.battery_percentage = -1

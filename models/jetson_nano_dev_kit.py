@@ -82,3 +82,6 @@ class JetsonNanoDevKit(GeneralModel):
         self.temperature_metrics["pll"] = utils.parseToFloat(pll["out_value"])
         self.temperature_metrics["pmic"] = utils.parseToFloat(pmic["out_value"])
         self.temperature_metrics["fan"] = utils.parseToFloat(fan["out_value"])
+
+    def set_battery_percentage(self):
+        self.battery_percentage = -1
