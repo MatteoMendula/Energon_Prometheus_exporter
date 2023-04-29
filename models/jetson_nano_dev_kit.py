@@ -52,7 +52,7 @@ class JetsonNanoDevKit(GeneralModel):
 
         for command in gpu_load_possible_commands:
             _gpu_command_output = utils.run_command_and_get_output(command)
-            if _gpu_command_output["error"] == False:
+            if _gpu_command_output["error"] == False and len(_gpu_command_output["out_value"]) > 0:
                 break
 
         if _gpu_command_output["error"] == True:

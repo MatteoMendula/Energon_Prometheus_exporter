@@ -65,7 +65,7 @@ class Ubuntu64(GeneralModel):
 
         gpu_load_command = "nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader"
         _gpu_command_output = utils.run_command_and_get_output(gpu_load_command)
-        if _gpu_command_output["error"] == True:
+        if _gpu_command_output["error"] == True or len(_gpu_command_output["out_value"]) == 0:
             self.gpu_usage_percentage = constants.ERROR_WHILE_READING_VALUE
             return 
         
