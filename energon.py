@@ -1,6 +1,6 @@
 import utils
 import constants
-from models import general_model, jetson_nano_dev_kit, ubuntu_64
+from models import general_model, jetson_nano_dev_kit, ubuntu_64, jetson_agx_xavier
 
 # Energon - A Prometheus exporter for energy consumption metrics of embedded devices
 # This class is the main class of the project. It is responsible for detecting the model of the device and calling the appropriate functions to get the metrics.
@@ -23,6 +23,8 @@ class Energon:
             return "Error in getting model %s" % out["out_value"]
         if "nvidia jetson nano developer kit" in out["out_value"].lower():
             return constants.JETSON_NANO_DEV_KIT
+        if "Jetson-AGX" in out["out_value"].lower():
+            return constants.JETSON_AGX_XAVIER
         
         # check if the device is a Ubuntu 64 bit
         out = utils.run_command_and_get_output("cat /etc/os-release")
@@ -35,6 +37,8 @@ class Energon:
     def instantiate_model(self):
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
             self.instantiated_model = jetson_nano_dev_kit.JetsonNanoDevKit()
+        elif self.detected_model == constants.JETSON_AGX_XAVIER:
+            self.instantiated_model = jetson_agx_xavier.JetsonAgxXavier()
         elif self.detected_model == constants.UBUNTU_64:
             self.instantiated_model = ubuntu_64.Ubuntu64()
         else:
