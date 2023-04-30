@@ -9,7 +9,7 @@ from prometheus_client import start_http_server, Gauge, Info
 
 class EnergonPrometheusExporter:
 
-    def __init__(self, app_port=9877, polling_interval_seconds=0.001):
+    def __init__(self, app_port=9877, polling_interval_seconds=0.05):
         self.app_port = app_port
         self.polling_interval_seconds = polling_interval_seconds
 
