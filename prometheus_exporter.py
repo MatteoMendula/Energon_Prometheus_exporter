@@ -72,7 +72,7 @@ class EnergonPrometheusExporter:
         self.ram_total = Gauge("energon_ram_total_bytes", "RAM total in bytes")
         self.ram_used = Gauge("energon_ram_used_bytes", "RAM used in bytes")
         self.ram_available = Gauge("energon_ram_available_bytes", "RAM available in bytes")
-        self.ram_percent_used = Gauge("energon_ram_percent_used_percentage", "RAM percent used in %")
+        self.ram_percent_used = Gauge("energon_ram_used_percentage", "RAM percent used in %")
 
         # gpu metrics
         self.gpu_total_usage_percentage = Gauge("energon_gpu_total_usage_percentage", "GPU total percent used in %")
