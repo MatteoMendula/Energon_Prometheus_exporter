@@ -2,10 +2,22 @@ import sys
 import re
 import time
 import energon
-# import actualMeter
+import argparse
 from prometheus_client import start_http_server, Gauge, Info
-
+# import actualMeter
 # example: sudo python3 prometheus_exporter.py 00:15:A3:00:55:02
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+    "-p",
+    "--port",
+    nargs="?",
+    default=9877,
+    type=int,
+    help="Port of the server",
+)
+args = parser.parse_args()
 
 class EnergonPrometheusExporter:
 
@@ -182,5 +194,5 @@ class EnergonPrometheusExporter:
         self.run_metrics_loop()
 
 if __name__ == "__main__":
-    server = EnergonPrometheusExporter()
+    server = EnergonPrometheusExporter(app_port=args.port)
     server.run()
