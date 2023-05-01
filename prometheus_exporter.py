@@ -2,10 +2,22 @@ import sys
 import re
 import time
 import energon
-# import actualMeter
+import argparse
 from prometheus_client import start_http_server, Gauge, Info
-
+# import actualMeter
 # example: sudo python3 prometheus_exporter.py 00:15:A3:00:55:02
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+    "-p",
+    "--port",
+    nargs="?",
+    default=9877,
+    type=int,
+    help="Port of the server",
+)
+args = parser.parse_args()
 
 class EnergonPrometheusExporter:
 
@@ -36,16 +48,19 @@ class EnergonPrometheusExporter:
         self.battery_percentage = Gauge("energon_battery_percentage", "Current battery percentage")
 
         # network metrics
-        for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
-            setattr(self, "network_metrics_{}_rx_packets".format(network_interface_name), Gauge("energon_network_metrics_{}_rx_packets_per_seconds".format(network_interface_name), "Network metrics {} rx_packets_per_seconds".format(network_interface_name)))
-            setattr(self, "network_metrics_{}_rx_bytes".format(network_interface_name), Gauge("energon_network_metrics_{}_rx_bytes_per_seconds".format(network_interface_name), "Network metrics {} rx_bytes_per_seconds".format(network_interface_name)))
-            setattr(self, "network_metrics_{}_rx_errors".format(network_interface_name), Gauge("energon_network_metrics_{}_rx_errors_per_seconds".format(network_interface_name), "Network metrics {} rx_errors_per_seconds".format(network_interface_name)))
-            setattr(self, "network_metrics_{}_rx_dropped".format(network_interface_name), Gauge("energon_network_metrics_{}_rx_dropped_per_seconds".format(network_interface_name), "Network metrics {} rx_dropped_per_seconds".format(network_interface_name)))
-            setattr(self, "network_metrics_{}_tx_packets".format(network_interface_name), Gauge("energon_network_metrics_{}_tx_packets_per_seconds".format(network_interface_name), "Network metrics {} tx_packets_per_seconds".format(network_interface_name)))
-            setattr(self, "network_metrics_{}_tx_bytes".format(network_interface_name), Gauge("energon_network_metrics_{}_tx_bytes_per_seconds".format(network_interface_name), "Network metrics {} tx_bytes_per_seconds".format(network_interface_name)))
-            setattr(self, "network_metrics_{}_tx_errors".format(network_interface_name), Gauge("energon_network_metrics_{}_tx_errors_per_seconds".format(network_interface_name), "Network metrics {} tx_errors_per_seconds".format(network_interface_name)))
-            setattr(self, "network_metrics_{}_tx_dropped".format(network_interface_name), Gauge("energon_network_metrics_{}_tx_dropped_per_seconds".format(network_interface_name), "Network metrics {} tx_dropped_per_seconds".format(network_interface_name)))
+        self.network_metrics_to_save = []
+        self.network_metrics_to_save.append("rx_packets")
+        self.network_metrics_to_save.append("rx_bytes")
+        self.network_metrics_to_save.append("rx_errors")
+        self.network_metrics_to_save.append("rx_dropped")
+        self.network_metrics_to_save.append("tx_packets")
+        self.network_metrics_to_save.append("tx_bytes")
+        self.network_metrics_to_save.append("tx_errors")
+        self.network_metrics_to_save.append("tx_dropped")
 
+        for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
+            for network_metric in self.network_metrics_to_save:
+                setattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric), Gauge("energon_network_metrics_{}_{}".format(network_interface_name, network_metric), "Network metrics {} {}".format(network_interface_name, network_metric)))
         # cpu frequency metrics
         for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
             setattr(self, "cpu_{}_frequency".format(core), Gauge("energon_cpu_{}_MHz".format(core), "CPU {} frequency in MHz".format(core)))
@@ -131,15 +146,12 @@ class EnergonPrometheusExporter:
 
         # network metrics
         for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
-            getattr(self, "network_metrics_{}_rx_packets".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["rx_packets"])
-            getattr(self, "network_metrics_{}_rx_bytes".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["rx_bytes"])
-            getattr(self, "network_metrics_{}_rx_errors".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["rx_errors"])
-            getattr(self, "network_metrics_{}_rx_dropped".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["rx_dropped"])
-            getattr(self, "network_metrics_{}_tx_packets".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["tx_packets"])
-            getattr(self, "network_metrics_{}_tx_bytes".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["tx_bytes"])
-            getattr(self, "network_metrics_{}_tx_errors".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["tx_errors"])
-            getattr(self, "network_metrics_{}_tx_dropped".format(network_interface_name)).set(self.energon.instantiated_model.network_metrics[network_interface_name]["tx_dropped"])
-        
+            for network_metric in self.network_metrics_to_save:
+                # handle new network interface
+                if not hasattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric)):
+                    setattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric), Gauge("energon_network_metrics_{}_{}".format(network_interface_name, network_metric), "Network metrics {} {}".format(network_interface_name, network_metric)))
+                getattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric)).set(self.energon.instantiated_model.network_metrics[network_interface_name][network_metric])
+
         # cpu frequency metrics
         for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
             getattr(self, "cpu_{}_frequency".format(core)).set(self.energon.instantiated_model.cpu_frequency_metrics[core])
@@ -182,5 +194,5 @@ class EnergonPrometheusExporter:
         self.run_metrics_loop()
 
 if __name__ == "__main__":
-    server = EnergonPrometheusExporter()
+    server = EnergonPrometheusExporter(app_port=args.port)
     server.run()
