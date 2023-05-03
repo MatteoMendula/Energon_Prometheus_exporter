@@ -132,6 +132,10 @@ class EnergonPrometheusExporter:
                 "network_interfaces": ' '.join(str(e) for e in self.energon.instantiated_model.network_interfaces)
             }
         )
+
+        print("-----------------")
+        print(self.energon.instantiated_model.energy_metrics)
+
         # power metrics
         self.total_in_power.set(self.energon.instantiated_model.energy_metrics["total_power"])
         self.cpu_in_power.set(self.energon.instantiated_model.energy_metrics["cpu_power"])
