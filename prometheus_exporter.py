@@ -125,6 +125,8 @@ class EnergonPrometheusExporter:
             time.sleep(self.polling_interval_seconds)
 
     def fetch(self):
+        print("-------- fetching metrics ---------")
+        
         self.device_info.info(
             {
                 "detected_model": self.energon.detected_model, 
@@ -133,8 +135,6 @@ class EnergonPrometheusExporter:
             }
         )
 
-        print("-----------------")
-        print(self.energon.instantiated_model.energy_metrics)
 
         # power metrics
         self.total_in_power.set(self.energon.instantiated_model.energy_metrics["total_power"])
