@@ -54,7 +54,8 @@ class GeneralModel:
         self.link_quality["_keys"] = []
 
         for interface_name in self.network_interfaces:
-            
+            if not interface_name.startswith("w"):
+                continue
             
             link_quality = utils.run_command_and_get_output("iwconfig " + interface_name)
             data = {}
