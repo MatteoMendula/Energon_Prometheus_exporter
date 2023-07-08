@@ -121,8 +121,8 @@ class JetsonAgxOrin(GeneralModel):
         self.temperature_metrics["soc1"] = constants.ERROR_WHILE_READING_VALUE if soc1["error"] else utils.parseToFloat(soc1["out_value"])
         self.temperature_metrics["soc2"] = constants.ERROR_WHILE_READING_VALUE if soc2["error"] else utils.parseToFloat(soc2["out_value"])
         self.temperature_metrics["tj"] = constants.ERROR_WHILE_READING_VALUE if tj["error"] else utils.parseToFloat(tj["out_value"])
-        self.temperature_metrics["t_board"] = constants.ERROR_WHILE_READING_VALUE if tboard_tegra["error"] else utils.parseToFloat(tboard_tegra["out_value"])
-        self.temperature_metrics["t_diode"] = constants.ERROR_WHILE_READING_VALUE if tdiode_tegra["error"] else utils.parseToFloat(tdiode_tegra["out_value"])
+        self.temperature_metrics["tboard_tegra"] = constants.ERROR_WHILE_READING_VALUE if tboard_tegra["error"] else utils.parseToFloat(tboard_tegra["out_value"])
+        self.temperature_metrics["tdiode_tegra"] = constants.ERROR_WHILE_READING_VALUE if tdiode_tegra["error"] else utils.parseToFloat(tdiode_tegra["out_value"])
 
     def set_battery_percentage(self):
         self.battery_percentage = -1

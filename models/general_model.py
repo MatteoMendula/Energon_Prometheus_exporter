@@ -6,6 +6,7 @@ class GeneralModel:
     def __init__(self):
         self.network_interfaces = constants.ERROR_MODEL_NOT_SUPPORTED
         self.network_metrics = constants.ERROR_MODEL_NOT_SUPPORTED
+        self.link_quality = constants.ERROR_MODEL_NOT_SUPPORTED
         self.energy_metrics = constants.ERROR_MODEL_NOT_SUPPORTED
         self.n_proc = constants.ERROR_MODEL_NOT_SUPPORTED
         self.cpu_usage_percentage = constants.ERROR_MODEL_NOT_SUPPORTED
@@ -46,6 +47,31 @@ class GeneralModel:
             self.network_metrics[interface_name]["tx_errors"] = constants.ERROR_WHILE_READING_VALUE if tx_errors["error"] else utils.parseToFloat(tx_errors["out_value"])
             self.network_metrics[interface_name]["rx_dropped"] = constants.ERROR_WHILE_READING_VALUE if rx_dropped["error"] else utils.parseToFloat(rx_dropped["out_value"])
             self.network_metrics[interface_name]["tx_dropped"] = constants.ERROR_WHILE_READING_VALUE if tx_dropped["error"] else utils.parseToFloat(tx_dropped["out_value"])
+
+    def set_link_quality(self):
+        self.set_network_interfaces()
+        self.link_quality = {}
+        self.link_quality["_keys"] = []
+
+        for interface_name in self.network_interfaces:
+            
+            
+            link_quality = utils.run_command_and_get_output("iwconfig " + interface_name)
+            data = {}
+            if not link_quality["error"] and len(link_quality["out_value"]) > 0:
+                self.link_quality["_keys"].append(interface_name)
+                rows = link_quality["out_value"].split("\n")
+                for row in rows:
+                    _row = row.strip()
+                    if _row.startswith("Link Quality"):
+                        data["link_quality"] = _row.split("=")[1].split(" ")[0] # x/70
+                        data["signal_level"] = _row.split("=")[2].split(" ")[0] # dBm
+                    if _row.startswith("Bit Rate"):
+                        data["bit_rate"] = _row.split("=")[1].split(" ")[0]     # Mb/s
+
+            self.link_quality[interface_name] = constants.ERROR_WHILE_READING_VALUE if link_quality["error"] else data
+
+        return self.link_quality
 
     def set_energy_metrics(self):
         pass
@@ -161,6 +187,7 @@ class GeneralModel:
     def refresh_all_metrics(self):
         self.set_network_interfaces()
         self.set_network_metrics()
+        self.set_link_quality()
         self.set_energy_metrics()
         self.set_n_proc()
         self.set_cpu_usage_percentage()

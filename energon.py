@@ -55,6 +55,7 @@ if __name__ == '__main__':
     energon.instantiated_model.refresh_all_metrics()
     network_interfaces = energon.instantiated_model.network_interfaces
     network_metrics = energon.instantiated_model.network_metrics
+    link_quality = energon.instantiated_model.link_quality
     energy_metrics = energon.instantiated_model.energy_metrics
     n_proc = energon.instantiated_model.n_proc
     cpu_usage_percentage = energon.instantiated_model.cpu_usage_percentage
@@ -68,6 +69,7 @@ if __name__ == '__main__':
     print("detected_model: ", detected_model)
     print("network_interfaces: ", network_interfaces)
     print("network_metrics: ", network_metrics)
+    print("link_quality: ", link_quality)
     print("energy_metrics: ", energy_metrics)
     print("n_proc: ", n_proc)
     print("cpu_usage_percentage: ", cpu_usage_percentage)
