@@ -1,6 +1,6 @@
 import utils
 import constants
-from models import general_model, jetson_nano_dev_kit, ubuntu_64, jetson_agx_xavier, jetson_agx_orin
+from models import general_model, jetson_nano_dev_kit, jetson_xavier_dev_kit, ubuntu_64, jetson_agx_xavier, jetson_agx_orin
 
 # Energon - A Prometheus exporter for energy consumption metrics of embedded devices
 # This class is the main class of the project. It is responsible for detecting the model of the device and calling the appropriate functions to get the metrics.
@@ -23,6 +23,8 @@ class Energon:
             return "Error in getting model %s" % out["out_value"]
         if "nvidia jetson nano developer kit" in out["out_value"].lower():
             return constants.JETSON_NANO_DEV_KIT
+        if "nvidia jetson xavier nx developer kit" in out["out_value"].lower():
+            return constants.JETSON_XAVIER_DEV_KIT
         if "jetson-agx" in out["out_value"].lower():
             return constants.JETSON_AGX_XAVIER
         if "jetson agx orin" in out["out_value"].lower():
@@ -39,6 +41,8 @@ class Energon:
     def instantiate_model(self):
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
             self.instantiated_model = jetson_nano_dev_kit.JetsonNanoDevKit()
+        elif self.detected_model == constants.JETSON_XAVIER_DEV_KIT:
+            self.instantiated_model = jetson_xavier_dev_kit.JetsonXavierDevKit()
         elif self.detected_model == constants.JETSON_AGX_XAVIER:
             self.instantiated_model = jetson_agx_xavier.JetsonAgxXavier()
         elif self.detected_model == constants.JETSON_AGX_ORIN:
