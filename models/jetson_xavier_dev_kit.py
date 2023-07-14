@@ -13,46 +13,24 @@ class JetsonXavierDevKit(GeneralModel):
 
     def set_energy_metrics(self):
         
-        in_gpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in1_input")
-        in_cpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in2_input")
-        in_soc_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in3_input")
-        in_cv_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in4_input")
-        in_vddrq_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in5_input")
-        in_sys5v_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in6_input")
+        in_tot_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in4_input")
+        in_gpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in5_input")
+        in_cpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in6_input")
 
-        in_gpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/curr1_input")
-        in_cpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/curr2_input")
-        in_soc_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/curr3_input")
-        in_cv_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/curr4_input")
-        in_vddrq_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/curr5_input")
-        in_sys5v_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/curr_input")
-
-        in_total_power = constants.ERROR_WHILE_READING_VALUE
-        if not (in_gpu_power["error"] or in_cpu_power["error"] or in_soc_power["error"] or in_cv_power["error"] or in_vddrq_power["error"] or in_sys5v_power["error"]):
-            in_total_power = utils.parseToFloat(in_gpu_power["out_value"]) + utils.parseToFloat(in_cpu_power["out_value"]) + utils.parseToFloat(in_soc_power["out_value"]) + utils.parseToFloat(in_cv_power["out_value"]) + utils.parseToFloat(in_vddrq_power["out_value"]) + utils.parseToFloat(in_sys5v_power["out_value"])
-        
-        in_total_voltage = constants.ERROR_WHILE_READING_VALUE
-        if not (in_gpu_voltage["error"] or in_cpu_voltage["error"] or in_soc_voltage["error"] or in_cv_voltage["error"] or in_vddrq_voltage["error"] or in_sys5v_voltage["error"]):
-            in_total_voltage = utils.parseToFloat(in_gpu_voltage["out_value"]) + utils.parseToFloat(in_cpu_voltage["out_value"]) + utils.parseToFloat(in_soc_voltage["out_value"]) + utils.parseToFloat(in_cv_voltage["out_value"]) + utils.parseToFloat(in_vddrq_voltage["out_value"]) + utils.parseToFloat(in_sys5v_voltage["out_value"])
+        in_tot_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in1_input")
+        in_gpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in2_input")
+        in_cpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in3_input")
 
         self.energy_metrics = {}
-        self.energy_metrics["_keys"] = ["total_power", "gpu_power", "cpu_power", "soc_power", "cv_power", "vddrq_power", "sys5v_power", "total_voltage", "gpu_voltage", "cpu_voltage", "soc_voltage", "cv_voltage", "vddrq_voltage", "sys5v_voltage"]
+        self.energy_metrics["_keys"] = ["total_power", "gpu_power", "cpu_power", "total_voltage", "gpu_voltage", "cpu_voltage"]
 
-        self.energy_metrics["total_power"] = in_total_power
+        self.energy_metrics["total_power"] = constants.ERROR_WHILE_READING_VALUE if in_tot_power["error"] else utils.parseToFloat(in_tot_power["out_value"])
         self.energy_metrics["gpu_power"] = constants.ERROR_WHILE_READING_VALUE if in_gpu_power["error"] else utils.parseToFloat(in_gpu_power["out_value"])
         self.energy_metrics["cpu_power"] = constants.ERROR_WHILE_READING_VALUE if in_cpu_power["error"] else utils.parseToFloat(in_cpu_power["out_value"])
-        self.energy_metrics["soc_power"] = constants.ERROR_WHILE_READING_VALUE if in_soc_power["error"] else utils.parseToFloat(in_soc_power["out_value"])
-        self.energy_metrics["cv_power"] = constants.ERROR_WHILE_READING_VALUE if in_cv_power["error"] else utils.parseToFloat(in_cv_power["out_value"])
-        self.energy_metrics["vddrq_power"] = constants.ERROR_WHILE_READING_VALUE if in_vddrq_power["error"] else utils.parseToFloat(in_vddrq_power["out_value"])
-        self.energy_metrics["sys5v_power"] = constants.ERROR_WHILE_READING_VALUE if in_sys5v_power["error"] else utils.parseToFloat(in_sys5v_power["out_value"])
 
-        self.energy_metrics["total_voltage"] = in_total_voltage
-        self.energy_metrics["cpu_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_cpu_voltage["error"] else utils.parseToFloat(in_cpu_voltage["out_value"])
+        self.energy_metrics["total_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_tot_voltage["error"] else utils.parseToFloat(in_tot_voltage["out_value"])
         self.energy_metrics["gpu_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_gpu_voltage["error"] else utils.parseToFloat(in_gpu_voltage["out_value"])
-        self.energy_metrics["soc_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_soc_voltage["error"] else utils.parseToFloat(in_soc_voltage["out_value"])
-        self.energy_metrics["cv_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_cv_voltage["error"] else utils.parseToFloat(in_cv_voltage["out_value"])
-        self.energy_metrics["vddrq_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_vddrq_voltage["error"] else utils.parseToFloat(in_vddrq_voltage["out_value"])
-        self.energy_metrics["sys5v_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_sys5v_voltage["error"] else utils.parseToFloat(in_sys5v_voltage["out_value"])
+        self.energy_metrics["cpu_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_cpu_voltage["error"] else utils.parseToFloat(in_cpu_voltage["out_value"])
 
 
     def set_cpu_frequency(self):
