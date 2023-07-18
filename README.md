@@ -24,6 +24,14 @@ Energon is a Prometheus [https://prometheus.io/] compliant system monitorin tool
 ![Energon Grafana Dashboard](./images/energon_screen1.png)
 ![Energon Grafana Dashboard](./images/energon_screen2.png)
 
+### Usage:
+- Install prometheus [https://prometheus.io/docs/prometheus/latest/installation/];
+- Install required python packages: ``` pip3 install -r requirements.txt ```
+- Run: ``` sudo python3 energon.py ```
+
+The application requires sudo privileges to access to some system files.
+You can still run the application without sudo privileges but some metrics will not be available.
+
 ## Currently supported features:
 All metrics names are compliat with prometheus specifications as described in [https://prometheus.io/docs/practices/naming/].
 
