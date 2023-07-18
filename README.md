@@ -9,7 +9,7 @@
     </tr>
 </table>
 
-Energon is a Prometheus [https://prometheus.io/] compliant system monitorin tools, it focuses on the energy consumption and resource usage in constrained devices but it integrates reporting tools for desktop machine, too.
+Energon is a Prometheus [https://prometheus.io/] compliant system monitoring tools, it focuses on the energy consumption and resource usage in constrained devices but it integrates reporting tools for desktop machine, too.
 
 ## Currently supported models:
 
