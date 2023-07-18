@@ -21,8 +21,8 @@ Energon is a Prometheus [https://prometheus.io/] compliant system monitoring too
 - Linux x86 architecture based systems.
 
 ### Screenshots:
-![Energon Grafana Dashboard](./images/energon_screen1.png)
-![Energon Grafana Dashboard](./images/energon_screen2.png)
+![Energon Grafana Dashboard](https://raw.githubusercontent.com/MatteoMendula/Energon_Prometheus_exporter/main/images/energon_screen1.png)
+![Energon Grafana Dashboard](https://raw.githubusercontent.com/MatteoMendula/Energon_Prometheus_exporter/main/images/energon_screen2.png)
 
 ### Usage:
 - Install prometheus [https://prometheus.io/docs/prometheus/latest/installation/];
