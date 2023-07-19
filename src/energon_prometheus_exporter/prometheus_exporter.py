@@ -1,9 +1,7 @@
-import sys
-import re
 import time
-import energon
 import argparse
 from prometheus_client import start_http_server, Gauge, Info
+from energon_prometheus_exporter.drivers import driver
 # import actualMeter
 # example: sudo python3 prometheus_exporter.py 00:15:A3:00:55:02
 
@@ -26,7 +24,7 @@ class EnergonPrometheusExporter:
         self.polling_interval_seconds = polling_interval_seconds
 
         # Start up the server to expose the metrics.
-        self.energon = energon.Energon()
+        self.energon = driver.Energon()
         self.energon.instantiated_model.refresh_all_metrics()
 
         # ----------------- Try to instanciate actual meter -----------------

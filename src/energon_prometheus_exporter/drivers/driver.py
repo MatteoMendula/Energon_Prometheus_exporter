@@ -1,6 +1,6 @@
-import utils
-import constants
-from models import general_model, jetson_nano_dev_kit, jetson_xavier_dev_kit, ubuntu_64, jetson_agx_xavier, jetson_agx_orin
+from energon_prometheus_exporter.drivers import utils
+from energon_prometheus_exporter.drivers import constants
+from energon_prometheus_exporter.models import general_model, jetson_nano_dev_kit, jetson_xavier_dev_kit, ubuntu_64, jetson_agx_xavier, jetson_agx_orin
 
 # Energon - A Prometheus exporter for energy consumption metrics of embedded devices
 # This class is the main class of the project. It is responsible for detecting the model of the device and calling the appropriate functions to get the metrics.

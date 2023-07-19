@@ -1,7 +1,6 @@
-import utils
-import time
-import constants
-from models.general_model import GeneralModel
+from energon_prometheus_exporter.drivers import utils
+from energon_prometheus_exporter.drivers import constants
+from energon_prometheus_exporter.models.general_model import GeneralModel
 
 # Jetson Nano Dev Kit Model 
 # author: @MatteoMendula

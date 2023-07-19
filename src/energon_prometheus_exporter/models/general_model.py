@@ -1,6 +1,6 @@
-import utils
 import time
-import constants
+from energon_prometheus_exporter.drivers import utils
+from energon_prometheus_exporter.drivers import constants
 
 class GeneralModel:
     def __init__(self):

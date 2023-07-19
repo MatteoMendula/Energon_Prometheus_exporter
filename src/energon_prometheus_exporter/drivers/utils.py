@@ -1,7 +1,5 @@
 import subprocess
 import re
-import os
-
 
 """Run the command and return the output as a string."""
 def run_command_and_get_output(command):
