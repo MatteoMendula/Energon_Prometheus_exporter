@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: energon-prometheus-exporter
-Version: 0.0.1
+Version: 0.0.2
 Summary: Energon is a Prometheus compliant system monitoring tools, it focuses on the energy consumption and resource usage in constrained devices but it integrates reporting tools for desktop machine, too.
 Author-email: Matteo Mendula <mattemendu@gmail.com>
 Project-URL: Homepage, https://github.com/MatteoMendula/Energon_Prometheus_exporter
@@ -45,11 +45,15 @@ Energon is a Prometheus [https://prometheus.io/] compliant system monitoring too
 - Download this repository: ``` git clone git@github.com:MatteoMendula/Energon_Prometheus_exporter.git ```
 - Install required python packages: ``` pip3 install -r requirements.txt ```;
 - Run: ``` sudo python3 energon.py ``` for running a single metric scan;
-- Run: ``` sudo python3 prometheus_exporter.py ``` for running the prometheus exporter;
+- Run: ``` sudo python3 prometheus_exporter.py ``` for running the prometheus exporter on default port 9877;
 
 #### With pip install
 - ``` pip3 install Energon-Prometheus-exporter ```;
-- ``` from Energon_Prometheus_exporter import constants```
+``` 
+from energon_prometheus_exporter.prometheus_exporter import EnergonPrometheusExporter 
+server_exporter = EnergonPrometheusExporter(DESIRED_PORT)
+server_exporter.run()
+```
 
 The application requires sudo privileges to access to some system files.
 You can still run the application without sudo privileges but some metrics will not be available.

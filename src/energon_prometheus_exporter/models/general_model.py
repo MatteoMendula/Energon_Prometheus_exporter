@@ -53,9 +53,11 @@ class GeneralModel:
         self.link_quality = {}
         self.link_quality["_keys"] = []
 
-        for interface_name in self.network_interfaces:
-            if not interface_name.startswith("w"):
+        for _interface_name in self.network_interfaces:
+            if not _interface_name.startswith("w"):
                 continue
+
+            interface_name = utils.clean_metric_name_to_prometheus_format(_interface_name)
             
             link_quality = utils.run_command_and_get_output("iwconfig " + interface_name)
             data = {}
@@ -65,10 +67,10 @@ class GeneralModel:
                 for row in rows:
                     _row = row.strip()
                     if _row.startswith("Link Quality"):
-                        data["link_quality"] = _row.split("=")[1].split(" ")[0] # x/70
-                        data["signal_level"] = _row.split("=")[2].split(" ")[0] # dBm
+                        data["link_quality"] = _row.split("=")[1].split(" ")[0].split("/")[0]   # x/70
+                        data["signal_level"] = _row.split("=")[2].split(" ")[0]                 # dBm
                     if _row.startswith("Bit Rate"):
-                        data["bit_rate"] = _row.split("=")[1].split(" ")[0]     # Mb/s
+                        data["bit_rate"] = _row.split("=")[1].split(" ")[0]                     # Mb/s
 
             self.link_quality[interface_name] = constants.ERROR_WHILE_READING_VALUE if link_quality["error"] else data
 

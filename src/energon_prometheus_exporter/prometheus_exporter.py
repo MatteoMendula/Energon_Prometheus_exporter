@@ -59,6 +59,14 @@ class EnergonPrometheusExporter:
         for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
             for network_metric in self.network_metrics_to_save:
                 setattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric), Gauge("energon_network_metrics_{}_{}".format(network_interface_name, network_metric), "Network metrics {} {}".format(network_interface_name, network_metric)))
+        
+        for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
+            if not network_interface_name.startswith("w"):
+                continue
+            setattr(self, "network_quality_{}_link_quality".format(network_interface_name), Gauge("energon_network_quality_{}_link_quality_x_over_70".format(network_interface_name), "Network metrics {} - link_quality [x/70]".format(network_interface_name)))
+            setattr(self, "network_quality_{}_signal_level".format(network_interface_name), Gauge("energon_network_quality_{}_signal_level_dBm".format(network_interface_name), "Network metrics {} - signal_level [dBm]".format(network_interface_name)))
+            setattr(self, "network_quality_{}_bit_rate".format(network_interface_name), Gauge("energon_network_quality_{}_bit_rate_Mbs".format(network_interface_name), "Network metrics {} - bit_rate [Mb/s]".format(network_interface_name)))
+        
         # cpu frequency metrics
         for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
             setattr(self, "cpu_{}_frequency".format(core), Gauge("energon_cpu_{}_MHz".format(core), "CPU {} frequency in MHz".format(core)))
@@ -153,6 +161,20 @@ class EnergonPrometheusExporter:
                 if not hasattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric)):
                     setattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric), Gauge("energon_network_metrics_{}_{}".format(network_interface_name, network_metric), "Network metrics {} {}".format(network_interface_name, network_metric)))
                 getattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric)).set(self.energon.instantiated_model.network_metrics[network_interface_name][network_metric])
+
+        for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
+            if not network_interface_name.startswith("w"):
+                continue
+            # handle new network interface
+            if not hasattr(self, "network_quality_{}_link_quality".format(network_interface_name)):
+                setattr(self, "network_quality_{}_link_quality".format(network_interface_name), Gauge("energon_network_quality_{}_link_quality_x_over_70/70".format(network_interface_name), "Network metrics {} - link_quality [x/70]".format(network_interface_name)))
+            if not hasattr(self, "network_quality_{}_signal_level".format(network_interface_name)):
+                setattr(self, "network_quality_{}_signal_level".format(network_interface_name), Gauge("energon_network_quality_{}_signal_level_dBm".format(network_interface_name), "Network metrics {} - signal_level [dBm]".format(network_interface_name)))
+            if not hasattr(self, "network_quality_{}_bit_rate".format(network_interface_name)):
+                setattr(self, "network_quality_{}_bit_rate".format(network_interface_name), Gauge("energon_network_quality_{}_bit_rate_Mbs".format(network_interface_name), "Network metrics {} - bit_rate [Mb/s]".format(network_interface_name)))
+            getattr(self, "network_quality_{}_link_quality".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["link_quality"])
+            getattr(self, "network_quality_{}_signal_level".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["signal_level"])
+            getattr(self, "network_quality_{}_bit_rate".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["bit_rate"])
 
         # cpu frequency metrics
         for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
