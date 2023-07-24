@@ -84,6 +84,8 @@ class Ubuntu64(GeneralModel):
                 continue
             self.temperature_metrics["_keys"].append(zone)
             temp = utils.run_command_and_get_output("cat /sys/class/thermal/" + zone + "/temp")
-            if temp["error"] == True:
+            if temp["error"] == True or len(temp["out_value"]) == 0:
                 self.temperature_metrics["error"] = True
+                self.temperature_metrics[zone] = constants.ERROR_WHILE_READING_VALUE
+                continue
             self.temperature_metrics[zone] = temp["out_value"]

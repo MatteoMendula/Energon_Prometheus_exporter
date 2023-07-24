@@ -1,7 +1,7 @@
 import time
 import argparse
 from prometheus_client import start_http_server, Gauge, Info
-from energon_prometheus_exporter.drivers import driver
+from energon_prometheus_exporter.drivers import driver, constants
 # import actualMeter
 # example: sudo python3 prometheus_exporter.py 00:15:A3:00:55:02
 
@@ -172,9 +172,9 @@ class EnergonPrometheusExporter:
                 setattr(self, "network_quality_{}_signal_level".format(network_interface_name), Gauge("energon_network_quality_{}_signal_level_dBm".format(network_interface_name), "Network metrics {} - signal_level [dBm]".format(network_interface_name)))
             if not hasattr(self, "network_quality_{}_bit_rate".format(network_interface_name)):
                 setattr(self, "network_quality_{}_bit_rate".format(network_interface_name), Gauge("energon_network_quality_{}_bit_rate_Mbs".format(network_interface_name), "Network metrics {} - bit_rate [Mb/s]".format(network_interface_name)))
-            getattr(self, "network_quality_{}_link_quality".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["link_quality"])
-            getattr(self, "network_quality_{}_signal_level".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["signal_level"])
-            getattr(self, "network_quality_{}_bit_rate".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["bit_rate"])
+            getattr(self, "network_quality_{}_link_quality".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["link_quality"] if self.energon.instantiated_model.link_quality[network_interface_name]["link_quality"] != constants.ERROR_WHILE_READING_VALUE else -1)
+            getattr(self, "network_quality_{}_signal_level".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["signal_level"] if self.energon.instantiated_model.link_quality[network_interface_name]["signal_level"] != constants.ERROR_WHILE_READING_VALUE else -1)
+            getattr(self, "network_quality_{}_bit_rate".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["bit_rate"] if self.energon.instantiated_model.link_quality[network_interface_name]["bit_rate"] != constants.ERROR_WHILE_READING_VALUE else -1)
 
         # cpu frequency metrics
         for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
@@ -209,6 +209,9 @@ class EnergonPrometheusExporter:
 
         # temperature metrics
         for temp_metric in self.energon.instantiated_model.temperature_metrics["_keys"]:
+            if self.energon.instantiated_model.temperature_metrics[temp_metric] == constants.ERROR_WHILE_READING_VALUE:
+                getattr(self, "temperature_{}".format(temp_metric)).set(-1)
+                continue
             getattr(self, "temperature_{}".format(temp_metric)).set(self.energon.instantiated_model.temperature_metrics[temp_metric])
 
     def run(self):

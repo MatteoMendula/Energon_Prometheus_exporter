@@ -61,6 +61,9 @@ class GeneralModel:
             
             link_quality = utils.run_command_and_get_output("iwconfig " + interface_name)
             data = {}
+            data["link_quality"] = constants.ERROR_WHILE_READING_VALUE
+            data["signal_level"] = constants.ERROR_WHILE_READING_VALUE
+            data["bit_rate"] = constants.ERROR_WHILE_READING_VALUE
             if not link_quality["error"] and len(link_quality["out_value"]) > 0:
                 self.link_quality["_keys"].append(interface_name)
                 rows = link_quality["out_value"].split("\n")

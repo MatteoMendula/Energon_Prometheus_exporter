@@ -1,12 +1,12 @@
 [project]
 name = "energon_prometheus_exporter"
-version = "0.0.3"
+version = "0.0.6"
 authors = [
   { name="Matteo Mendula", email="mattemendu@gmail.com" },
 ]
 dependencies = [
 	"prometheus_client==0.17.0",
-	"PyBluez==0.30",
+	"PyBluez>=0.20",
 ]
 description = "Energon is a Prometheus compliant system monitoring tools, it focuses on the energy consumption and resource usage in constrained devices but it integrates reporting tools for desktop machine, too."
 readme = "README.md"
