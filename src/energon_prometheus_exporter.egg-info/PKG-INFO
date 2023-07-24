@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: energon-prometheus-exporter
-Version: 0.0.2
+Version: 0.0.3
 Summary: Energon is a Prometheus compliant system monitoring tools, it focuses on the energy consumption and resource usage in constrained devices but it integrates reporting tools for desktop machine, too.
 Author-email: Matteo Mendula <mattemendu@gmail.com>
 Project-URL: Homepage, https://github.com/MatteoMendula/Energon_Prometheus_exporter
@@ -8,7 +8,7 @@ Project-URL: Bug Tracker, https://github.com/MatteoMendula/Energon_Prometheus_ex
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
-Requires-Python: >=3.7
+Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
@@ -79,14 +79,18 @@ N.B. Only if real sensor is connected!
 
 ### Network metrics:
 For each interface_name
-- network_metrics_[interface_name]_rx_packets: received packets;
-- network_metrics_[interface_name]_rx_bytes: received bytes;
-- network_metrics_[interface_name]_rx_errors: received errors;
-- network_metrics_[interface_name]_rx_dropped: received dropped packets;
-- network_metrics_[interface_name]_tx_packets: transmitted packets;
-- network_metrics_[interface_name]_tx_bytes: trasmitted bytes;
-- network_metrics_[interface_name]_tx_errors: transmitted errors;
-- network_metrics_[interface_name]_tx_dropped: transmitted dropped packets.
+- energon_network_metrics_[interface_name]_rx_packets: received packets;
+- energon_network_metrics_[interface_name]_rx_bytes: received bytes;
+- energon_network_metrics_[interface_name]_rx_errors: received errors;
+- energon_network_metrics_[interface_name]_rx_dropped: received dropped packets;
+- energon_network_metrics_[interface_name]_tx_packets: transmitted packets;
+- energon_network_metrics_[interface_name]_tx_bytes: trasmitted bytes;
+- energon_network_metrics_[interface_name]_tx_errors: transmitted errors;
+- energon_network_metrics_[interface_name]_tx_dropped: transmitted dropped packets.
+Mainly for wifi interfaces
+- energon_network_quality_[interface_name]_link_quality_x_over_70: link quality x/70 for interface [interface_name];
+- energon_network_quality_[interface_name]_signal_level_dBm: signal level in dBm for interface [interface_name];
+- energon_network_quality_[interface_name]_bit_rate_Mbs: bit rate in Mbs for interface [interface_name].
 
 ### Cpu usage:
 For each core_number
