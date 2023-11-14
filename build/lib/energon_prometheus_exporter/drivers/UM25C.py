@@ -49,6 +49,3 @@ class UM25C(object):
 if __name__ == "__main__":
     meter = UM25C("00:15:A3:00:55:02")
     print(meter.query())
-
-# Example output
-# {'Volts': 5.4, 'Amps': 0.4497, 'Watts': 2.428, 'temp_C': 23, 'temp_F': 73, 'group': 0, 'time': datetime.datetime(2023, 11, 12, 15, 20, 47, 908722, tzinfo=datetime.timezone(datetime.timedelta(seconds=3600), 'CET')), '0_mAh': 192, '0_mWh': 1038, '1_mAh': 0, '1_mWh': 0, '2_mAh': 0, '2_mWh': 0, '3_mAh': 0, '3_mWh': 0, '4_mAh': 0, '4_mWh': 0, '5_mAh': 0, '5_mWh': 0, '6_mAh': 0, '6_mWh': 0, '7_mAh': 0, '7_mWh': 0, '8_mAh': 0, '8_mWh': 0, '9_mAh': 0, '9_mWh': 0, 'data_line_pos_volt': 0.59, 'data_line_neg_volt': 0.57, 'resistance': 12.0}

@@ -1,10 +1,8 @@
-import sys
-import re
 import time
-import energon
 import argparse
 from prometheus_client import start_http_server, Gauge, Info
-import actualMeter
+from energon_prometheus_exporter.drivers import driver, constants
+# import actualMeter
 # example: sudo python3 prometheus_exporter.py 00:15:A3:00:55:02
 
 parser = argparse.ArgumentParser()
@@ -17,32 +15,20 @@ parser.add_argument(
     type=int,
     help="Port of the server",
 )
-
-parser.add_argument(
-    "-u",
-    "--um25c",
-    nargs="?",
-    default="None",
-    type=str,
-    help="UM25C connection address",
-)
-
 args = parser.parse_args()
 
 class EnergonPrometheusExporter:
 
-    def __init__(self, app_port=9877, UM25C_connection_address=None, polling_interval_seconds=0.05):
+    def __init__(self, app_port=9877, polling_interval_seconds=0.05):
         self.app_port = app_port
-        self.UM25C_connection_address = UM25C_connection_address
         self.polling_interval_seconds = polling_interval_seconds
 
-        # ----------------- Try to instanciate actual meter -----------------
-        self.is_actual_meter_connected, self.actual_meter = self.TryToInstanciateActualMeter()
-
         # Start up the server to expose the metrics.
-        self.energon = energon.Energon(self.is_actual_meter_connected, self.actual_meter)
+        self.energon = driver.Energon()
         self.energon.instantiated_model.refresh_all_metrics()
 
+        # ----------------- Try to instanciate actual meter -----------------
+        # self.is_actual_meter_connected, self.actual_meter = self.TryToInstanciateActualMeter()
 
         # ----------------- Prometheus metrics to collect -----------------
         # static metrics
@@ -73,6 +59,14 @@ class EnergonPrometheusExporter:
         for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
             for network_metric in self.network_metrics_to_save:
                 setattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric), Gauge("energon_network_metrics_{}_{}".format(network_interface_name, network_metric), "Network metrics {} {}".format(network_interface_name, network_metric)))
+        
+        for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
+            if not network_interface_name.startswith("w"):
+                continue
+            setattr(self, "network_quality_{}_link_quality".format(network_interface_name), Gauge("energon_network_quality_{}_link_quality_x_over_70".format(network_interface_name), "Network metrics {} - link_quality [x/70]".format(network_interface_name)))
+            setattr(self, "network_quality_{}_signal_level".format(network_interface_name), Gauge("energon_network_quality_{}_signal_level_dBm".format(network_interface_name), "Network metrics {} - signal_level [dBm]".format(network_interface_name)))
+            setattr(self, "network_quality_{}_bit_rate".format(network_interface_name), Gauge("energon_network_quality_{}_bit_rate_Mbs".format(network_interface_name), "Network metrics {} - bit_rate [Mb/s]".format(network_interface_name)))
+        
         # cpu frequency metrics
         for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
             setattr(self, "cpu_{}_frequency".format(core), Gauge("energon_cpu_{}_MHz".format(core), "CPU {} frequency in MHz".format(core)))
@@ -113,19 +107,20 @@ class EnergonPrometheusExporter:
         self.total_actual_volts = Gauge("energon_total_actual_volts", "Total actual volts")
         self.total_actual_amps = Gauge("energon_total_actual_amps", "Total actual amps")
 
-    def TryToInstanciateActualMeter(self):
-        actual_meter = None
-        is_actual_meter_connected = False
-        if (self.UM25C_connection_address is not None):
-            print("TryToInstanciateActualMeter at", self.UM25C_connection_address)
-            regex = r"[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}"
-            try:
-                actual_meter = actualMeter.UM25C(self.UM25C_connection_address)
-                is_actual_meter_connected = True
-            except:
-                print("Actual meter not connected")
+    # def TryToInstanciateActualMeter(self):
+    #     actual_meter = None
+    #     is_actual_meter_connected = False
+    #     if (len( sys.argv ) > 1 and (bool(re.match(regex, sys.argv[1])))):
+    #         print("TryToInstanciateActualMeter at", sys.argv[1])
+    #         regex = r"[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}:[0-9A-Z]{2}"
+    #         connection_address = sys.argv[1]
+    #         try:
+    #             actual_meter = actualMeter.UM25C(connection_address)
+    #             is_actual_meter_connected = True
+    #         except:
+    #             print("Actual meter not connected")
 
-        return (is_actual_meter_connected, actual_meter)
+    #     return (is_actual_meter_connected, actual_meter)
     
     def run_metrics_loop(self):
         """Metrics fetching loop"""
@@ -167,6 +162,20 @@ class EnergonPrometheusExporter:
                     setattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric), Gauge("energon_network_metrics_{}_{}".format(network_interface_name, network_metric), "Network metrics {} {}".format(network_interface_name, network_metric)))
                 getattr(self, "network_metrics_{}_{}".format(network_interface_name, network_metric)).set(self.energon.instantiated_model.network_metrics[network_interface_name][network_metric])
 
+        for network_interface_name in self.energon.instantiated_model.network_metrics["_keys"]:
+            if not network_interface_name.startswith("w"):
+                continue
+            # handle new network interface
+            if not hasattr(self, "network_quality_{}_link_quality".format(network_interface_name)):
+                setattr(self, "network_quality_{}_link_quality".format(network_interface_name), Gauge("energon_network_quality_{}_link_quality_x_over_70/70".format(network_interface_name), "Network metrics {} - link_quality [x/70]".format(network_interface_name)))
+            if not hasattr(self, "network_quality_{}_signal_level".format(network_interface_name)):
+                setattr(self, "network_quality_{}_signal_level".format(network_interface_name), Gauge("energon_network_quality_{}_signal_level_dBm".format(network_interface_name), "Network metrics {} - signal_level [dBm]".format(network_interface_name)))
+            if not hasattr(self, "network_quality_{}_bit_rate".format(network_interface_name)):
+                setattr(self, "network_quality_{}_bit_rate".format(network_interface_name), Gauge("energon_network_quality_{}_bit_rate_Mbs".format(network_interface_name), "Network metrics {} - bit_rate [Mb/s]".format(network_interface_name)))
+            getattr(self, "network_quality_{}_link_quality".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["link_quality"] if self.energon.instantiated_model.link_quality[network_interface_name]["link_quality"] != constants.ERROR_WHILE_READING_VALUE else -1)
+            getattr(self, "network_quality_{}_signal_level".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["signal_level"] if self.energon.instantiated_model.link_quality[network_interface_name]["signal_level"] != constants.ERROR_WHILE_READING_VALUE else -1)
+            getattr(self, "network_quality_{}_bit_rate".format(network_interface_name)).set(self.energon.instantiated_model.link_quality[network_interface_name]["bit_rate"] if self.energon.instantiated_model.link_quality[network_interface_name]["bit_rate"] != constants.ERROR_WHILE_READING_VALUE else -1)
+
         # cpu frequency metrics
         for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
             getattr(self, "cpu_{}_frequency".format(core)).set(self.energon.instantiated_model.cpu_frequency_metrics[core])
@@ -200,6 +209,9 @@ class EnergonPrometheusExporter:
 
         # temperature metrics
         for temp_metric in self.energon.instantiated_model.temperature_metrics["_keys"]:
+            if self.energon.instantiated_model.temperature_metrics[temp_metric] == constants.ERROR_WHILE_READING_VALUE:
+                getattr(self, "temperature_{}".format(temp_metric)).set(-1)
+                continue
             getattr(self, "temperature_{}".format(temp_metric)).set(self.energon.instantiated_model.temperature_metrics[temp_metric])
 
     def run(self):
@@ -210,6 +222,5 @@ class EnergonPrometheusExporter:
         self.run_metrics_loop()
 
 if __name__ == "__main__":
-    print("Starting energon prometheus server")
-    server = EnergonPrometheusExporter(app_port=args.port, UM25C_connection_address=args.um25c)
+    server = EnergonPrometheusExporter(app_port=args.port)
     server.run()

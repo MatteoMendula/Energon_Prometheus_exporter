@@ -1,6 +1,6 @@
-import utils
-import constants
-from models import general_model, jetson_nano_dev_kit, jetson_xavier_dev_kit, ubuntu_64, jetson_agx_xavier, jetson_agx_orin, UM25C
+from energon_prometheus_exporter.drivers import utils
+from energon_prometheus_exporter.drivers import constants
+from energon_prometheus_exporter.models import general_model, jetson_nano_dev_kit, jetson_xavier_dev_kit, ubuntu_64, jetson_agx_xavier, jetson_agx_orin
 
 # Energon - A Prometheus exporter for energy consumption metrics of embedded devices
 # This class is the main class of the project. It is responsible for detecting the model of the device and calling the appropriate functions to get the metrics.
@@ -8,10 +8,8 @@ from models import general_model, jetson_nano_dev_kit, jetson_xavier_dev_kit, ub
 # date: 2023-04-23
 
 class Energon:
-    def __init__(self, is_actual_meter_connected, actual_meter):
+    def __init__(self):
         self.name = 'Energon Prometheus Exporter'
-        self.is_actual_meter_connected = is_actual_meter_connected
-        self.actual_meter = actual_meter
         self.version = '0.0.1'
         self.detected_model = self.detect_model()
         self.instantiated_model = None
@@ -41,10 +39,6 @@ class Energon:
         return constants.UNKNOWN_MODEL
         
     def instantiate_model(self):
-        if self.is_actual_meter_connected:
-            self.instantiated_model = UM25C.UM25C(self.actual_meter)
-            return
-
         if self.detected_model == constants.JETSON_NANO_DEV_KIT:
             self.instantiated_model = jetson_nano_dev_kit.JetsonNanoDevKit()
         elif self.detected_model == constants.JETSON_XAVIER_DEV_KIT:
