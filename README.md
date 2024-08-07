@@ -14,6 +14,7 @@ Energon is a Prometheus [https://prometheus.io/] compliant system monitoring too
 ## Currently supported models:
 
 - Jetson Nano Dev Kit [here](https://developer.nvidia.com/embedded/jetson-nano-developer-kit);
+- Jetson Orin Nano Dev Kit [here](https://developer.nvidia.com/embedded/learn/get-started-jetson-orin-nano-devkit);
 - Jetson Xavier NX Dev Kit [here](https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit); 
 - Jetson Xavier NX Seed Studio [here](https://www.seeedstudio.com/Jetson-20-1-H1-p-5328.html);
 - Jetson Orin Dev Kit [here](https://developer.nvidia.com/embedded/learn/jetson-agx-orin-devkit-user-guide/index.html);
