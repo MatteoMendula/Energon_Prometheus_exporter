@@ -80,6 +80,16 @@ class GeneralModel:
         return self.link_quality
 
     def set_energy_metrics(self):
+        
+        self.energy_metrics = {}
+
+        self.energy_metrics["gpu_power"] = -1
+        self.energy_metrics["cpu_power"] =  -1
+        self.energy_metrics["cpu_gpu_power"] = -1
+
+        self.energy_metrics["gpu_voltage"] = -1
+        self.energy_metrics["cpu_voltage"] =  -1
+        self.energy_metrics["cpu_gpu_voltage"] = -1
         pass
 
     def set_n_proc(self):

@@ -10,8 +10,11 @@ from energon_prometheus_exporter.models.general_model import GeneralModel
 class Ubuntu64(GeneralModel):
     def __init__(self):
         super().__init__()
+        self.detected_model = constants.UBUNTU_64
 
     def set_energy_metrics(self):
+        super().set_energy_metrics()
+
         in_psys_power_first = utils.run_command_and_get_output("cat /sys/devices/virtual/powercap/intel-rapl/intel-rapl:1/energy_uj")     # micro Joules
         in_cpu_power_first = utils.run_command_and_get_output("cat /sys/devices/virtual/powercap/intel-rapl/intel-rapl:0/energy_uj")      # micro Joules             
         
@@ -26,12 +29,11 @@ class Ubuntu64(GeneralModel):
             in_psys_power = float("nan")
             in_cpu_power = float("nan")
         else:
-            in_psys_power = utils.parse_micro_joules_string_watts_float(in_psys_power_second["out_value"]) - utils.parse_micro_joules_string_watts_float(in_psys_power_first["out_value"])
-            in_cpu_power = utils.parse_micro_joules_string_watts_float(in_cpu_power_second["out_value"]) - utils.parse_micro_joules_string_watts_float(in_cpu_power_first["out_value"])
+            in_psys_power = utils.parse_micro_joules_string_milliwatts_float(in_psys_power_second["out_value"]) - utils.parse_micro_joules_string_milliwatts_float(in_psys_power_first["out_value"])
+            in_cpu_power = utils.parse_micro_joules_string_milliwatts_float(in_cpu_power_second["out_value"]) - utils.parse_micro_joules_string_milliwatts_float(in_cpu_power_first["out_value"])
         
         in_gpu_power = float("nan") if in_gpu_power["error"] else utils.parseToFloat(in_gpu_power["out_value"])
 
-        self.energy_metrics = {}
         self.energy_metrics["_keys"] = ["total_power", "gpu_power", "cpu_power", "total_voltage", "cpu_voltage", "gpu_voltage"]
 
         self.energy_metrics["total_power"] = in_psys_power + in_gpu_power + in_cpu_power

@@ -9,8 +9,12 @@ from energon_prometheus_exporter.models.general_model import GeneralModel
 class JetsonNanoDevKit(GeneralModel):
     def __init__(self):
         super().__init__()
+        self.detected_model = constants.JETSON_NANO_DEV_KIT
+
 
     def set_energy_metrics(self):
+        super().set_energy_metrics()
+
         in_tot_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power0_input")
         in_gpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power1_input")
         in_cpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_power2_input")
@@ -19,7 +23,6 @@ class JetsonNanoDevKit(GeneralModel):
         in_gpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_voltage1_input")
         in_cpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221x/6-0040/iio:device0/in_voltage2_input")
 
-        self.energy_metrics = {}
         self.energy_metrics["_keys"] = ["total_power", "gpu_power", "cpu_power", "total_voltage", "cpu_voltage", "gpu_voltage"]
 
         self.energy_metrics["total_power"] = constants.ERROR_WHILE_READING_VALUE if in_tot_power["error"] else utils.parseToFloat(in_tot_power["out_value"])

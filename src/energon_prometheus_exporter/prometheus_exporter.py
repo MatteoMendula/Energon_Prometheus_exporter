@@ -146,11 +146,6 @@ class EnergonPrometheusExporter:
 
 
         # power metrics
-
-        if self.energon.instantiated_model.detected_model == constants.JETSON_ORIN_NANO:
-            self.cpu_gpu_in_power.set(self.energon.instantiated_model.energy_metrics["cpu_gpu_power"])
-            self.cpu_gpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["cpu_gpu_voltage"])
-
         self.total_in_power.set(self.energon.instantiated_model.energy_metrics["total_power"])
         self.cpu_in_power.set(self.energon.instantiated_model.energy_metrics["cpu_power"])
         self.gpu_in_power.set(self.energon.instantiated_model.energy_metrics["gpu_power"])
@@ -159,6 +154,9 @@ class EnergonPrometheusExporter:
         self.cpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["cpu_voltage"])
         self.gpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["gpu_voltage"])
         
+        # this is for JETSON ORIN NANO model
+        self.cpu_gpu_in_power.set(self.energon.instantiated_model.energy_metrics["cpu_gpu_power"])
+        self.cpu_gpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["cpu_gpu_voltage"])
             
 
         # battery

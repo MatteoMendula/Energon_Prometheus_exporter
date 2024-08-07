@@ -64,12 +64,12 @@ def parseToFloat(value):
     _value = remove_characters_from_string(_value)
     return float(_value)
 
-def parse_micro_joules_string_watts_float(value):
+def parse_micro_joules_string_milliwatts_float(value):
     _value = parseToFloat(value)
     if _value == float("nan"):
         return value
     _value = float(_value)
-    return _value / 1000000
+    return _value / 1000
 
 def getConversionToMBCoefficient(string):
     if "K" in string:

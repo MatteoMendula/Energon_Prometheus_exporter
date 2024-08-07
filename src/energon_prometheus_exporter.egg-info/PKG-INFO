@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
-Name: energon-prometheus-exporter
-Version: 0.0.6
+Name: energon_prometheus_exporter
+Version: 0.1.0
 Summary: Energon is a Prometheus compliant system monitoring tools, it focuses on the energy consumption and resource usage in constrained devices but it integrates reporting tools for desktop machine, too.
 Author-email: Matteo Mendula <mattemendu@gmail.com>
 Project-URL: Homepage, https://github.com/MatteoMendula/Energon_Prometheus_exporter
@@ -11,6 +11,7 @@ Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 License-File: LICENSE
+Requires-Dist: prometheus_client==0.17.0
 
 <table>
     <tr>
@@ -28,6 +29,7 @@ Energon is a Prometheus [https://prometheus.io/] compliant system monitoring too
 ## Currently supported models:
 
 - Jetson Nano Dev Kit [here](https://developer.nvidia.com/embedded/jetson-nano-developer-kit);
+- Jetson Orin Nano Dev Kit [here](https://developer.nvidia.com/embedded/learn/get-started-jetson-orin-nano-devkit);
 - Jetson Xavier NX Dev Kit [here](https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit); 
 - Jetson Xavier NX Seed Studio [here](https://www.seeedstudio.com/Jetson-20-1-H1-p-5328.html);
 - Jetson Orin Dev Kit [here](https://developer.nvidia.com/embedded/learn/jetson-agx-orin-devkit-user-guide/index.html);

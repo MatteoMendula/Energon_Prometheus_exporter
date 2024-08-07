@@ -9,8 +9,10 @@ from energon_prometheus_exporter.models.general_model import GeneralModel
 class JetsonXavierDevKit(GeneralModel):
     def __init__(self):
         super().__init__()
+        self.detected_model = constants.JETSON_XAVIER_DEV_KIT
 
     def set_energy_metrics(self):
+        super().set_energy_metrics()
         
         in_tot_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in4_input")
         in_gpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in5_input")
@@ -20,7 +22,6 @@ class JetsonXavierDevKit(GeneralModel):
         in_gpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in2_input")
         in_cpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/drivers/ina3221/7-0040/hwmon/hwmon5/in3_input")
 
-        self.energy_metrics = {}
         self.energy_metrics["_keys"] = ["total_power", "gpu_power", "cpu_power", "total_voltage", "gpu_voltage", "cpu_voltage"]
 
         self.energy_metrics["total_power"] = constants.ERROR_WHILE_READING_VALUE if in_tot_power["error"] else utils.parseToFloat(in_tot_power["out_value"])

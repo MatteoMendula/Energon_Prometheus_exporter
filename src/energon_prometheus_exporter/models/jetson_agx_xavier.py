@@ -9,8 +9,11 @@ from energon_prometheus_exporter.models.general_model import GeneralModel
 class JetsonAgxXavier(GeneralModel):
     def __init__(self):
         super().__init__()
+        self.detected_model = constants.JETSON_AGX_XAVIER
+
 
     def set_energy_metrics(self):
+        super().set_energy_metrics()
         
         in_gpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/devices/1-0040/hwmon/hwmon3/in1_input")
         in_cpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/devices/1-0040/hwmon/hwmon3/in2_input")
@@ -34,7 +37,6 @@ class JetsonAgxXavier(GeneralModel):
         if not (in_gpu_voltage["error"] or in_cpu_voltage["error"] or in_soc_voltage["error"] or in_cv_voltage["error"] or in_vddrq_voltage["error"] or in_sys5v_voltage["error"]):
             in_total_voltage = utils.parseToFloat(in_gpu_voltage["out_value"]) + utils.parseToFloat(in_cpu_voltage["out_value"]) + utils.parseToFloat(in_soc_voltage["out_value"]) + utils.parseToFloat(in_cv_voltage["out_value"]) + utils.parseToFloat(in_vddrq_voltage["out_value"]) + utils.parseToFloat(in_sys5v_voltage["out_value"])
 
-        self.energy_metrics = {}
         self.energy_metrics["_keys"] = ["total_power", "gpu_power", "cpu_power", "soc_power", "cv_power", "vddrq_power", "sys5v_power", "total_voltage", "gpu_voltage", "cpu_voltage", "soc_voltage", "cv_voltage", "vddrq_voltage", "sys5v_voltage"]
 
         self.energy_metrics["total_power"] = in_total_power

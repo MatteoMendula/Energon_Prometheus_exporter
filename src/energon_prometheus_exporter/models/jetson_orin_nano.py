@@ -12,6 +12,8 @@ class JetsonOrinNano(GeneralModel):
         self.detected_model = constants.JETSON_ORIN_NANO
 
     def set_energy_metrics(self):
+        super().set_energy_metrics()
+        
         in_tot_power = utils.run_command_and_get_output("cat /sys/bus/i2c/devices/1-0040/hwmon/hwmon0/curr1_input")
         in_cpu_gpu_power = utils.run_command_and_get_output("cat /sys/bus/i2c/devices/1-0040/hwmon/hwmon0/curr2_input")
         in_soc_power = utils.run_command_and_get_output("cat /sys/bus/i2c/devices/1-0040/hwmon/hwmon0/curr3_input")
@@ -20,20 +22,15 @@ class JetsonOrinNano(GeneralModel):
         in_cpu_gpu_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/devices/1-0040/hwmon/hwmon0/in2_input")
         in_soc_voltage = utils.run_command_and_get_output("cat /sys/bus/i2c/devices/1-0040/hwmon/hwmon0/in3_input")
 
-        self.energy_metrics = {}
         self.energy_metrics["_keys"] = ["total_power", "gpu_power", "cpu_power", "cpu_gpu_power", "soc_power", "total_voltage", "gpu_voltage", "cpu_voltage", "cpu_gpu_voltage", "soc_voltage"]
 
         self.energy_metrics["total_power"] = constants.ERROR_WHILE_READING_VALUE if in_tot_power["error"] else utils.parseToFloat(in_tot_power["out_value"])
         self.energy_metrics["cpu_gpu_power"] = constants.ERROR_WHILE_READING_VALUE if in_cpu_gpu_power["error"] else utils.parseToFloat(in_cpu_gpu_power["out_value"])
         self.energy_metrics["soc_power"] = constants.ERROR_WHILE_READING_VALUE if in_soc_power["error"] else utils.parseToFloat(in_soc_power["out_value"])
-        self.energy_metrics["gpu_power"] = -1
-        self.energy_metrics["cpu_power"] =  -1
 
         self.energy_metrics["total_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_tot_voltage["error"] else utils.parseToFloat(in_tot_voltage["out_value"])
         self.energy_metrics["cpu_gpu_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_cpu_gpu_voltage["error"] else utils.parseToFloat(in_cpu_gpu_voltage["out_value"])
         self.energy_metrics["soc_voltage"] = constants.ERROR_WHILE_READING_VALUE if in_soc_voltage["error"] else utils.parseToFloat(in_soc_voltage["out_value"])
-        self.energy_metrics["gpu_voltage"] = -1
-        self.energy_metrics["cpu_voltage"] =  -1
                   
     def set_cpu_frequency(self):
         core_0 = utils.run_command_and_get_output("cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq")
