@@ -44,6 +44,9 @@ class EnergonPrometheusExporter:
         self.gpu_in_voltage = Gauge("energon_gpu_in_voltage_mV", "Current gpu voltage in millivolts")
         # battery
         self.battery_percentage = Gauge("energon_battery_percentage", "Current battery percentage")
+        # jetson orin nano only
+        self.cpu_gpu_in_power = Gauge("energon_cpu_gpu_in_power_mW", "Current cpu and gpu power consumption in milliwatts")
+        self.cpu_gpu_in_voltage = Gauge("energon_cpu_gpu_in_voltage_mV", "Current cpu and gpu voltage in millivolts")
 
         # network metrics
         self.network_metrics_to_save = []
@@ -66,7 +69,7 @@ class EnergonPrometheusExporter:
             setattr(self, "network_quality_{}_link_quality".format(network_interface_name), Gauge("energon_network_quality_{}_link_quality_x_over_70".format(network_interface_name), "Network metrics {} - link_quality [x/70]".format(network_interface_name)))
             setattr(self, "network_quality_{}_signal_level".format(network_interface_name), Gauge("energon_network_quality_{}_signal_level_dBm".format(network_interface_name), "Network metrics {} - signal_level [dBm]".format(network_interface_name)))
             setattr(self, "network_quality_{}_bit_rate".format(network_interface_name), Gauge("energon_network_quality_{}_bit_rate_Mbs".format(network_interface_name), "Network metrics {} - bit_rate [Mb/s]".format(network_interface_name)))
-        
+    
         # cpu frequency metrics
         for core in self.energon.instantiated_model.cpu_frequency_metrics["_keys"]:
             setattr(self, "cpu_{}_frequency".format(core), Gauge("energon_cpu_{}_MHz".format(core), "CPU {} frequency in MHz".format(core)))
@@ -143,6 +146,11 @@ class EnergonPrometheusExporter:
 
 
         # power metrics
+
+        if self.energon.instantiated_model.detected_model == constants.JETSON_ORIN_NANO:
+            self.cpu_gpu_in_power.set(self.energon.instantiated_model.energy_metrics["cpu_gpu_power"])
+            self.cpu_gpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["cpu_gpu_voltage"])
+
         self.total_in_power.set(self.energon.instantiated_model.energy_metrics["total_power"])
         self.cpu_in_power.set(self.energon.instantiated_model.energy_metrics["cpu_power"])
         self.gpu_in_power.set(self.energon.instantiated_model.energy_metrics["gpu_power"])
@@ -150,6 +158,8 @@ class EnergonPrometheusExporter:
         self.total_in_voltage.set(self.energon.instantiated_model.energy_metrics["total_voltage"])
         self.cpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["cpu_voltage"])
         self.gpu_in_voltage.set(self.energon.instantiated_model.energy_metrics["gpu_voltage"])
+        
+            
 
         # battery
         self.battery_percentage.set(self.energon.instantiated_model.battery_percentage)

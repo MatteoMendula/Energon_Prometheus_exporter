@@ -64,7 +64,7 @@ class GeneralModel:
             data["link_quality"] = constants.ERROR_WHILE_READING_VALUE
             data["signal_level"] = constants.ERROR_WHILE_READING_VALUE
             data["bit_rate"] = constants.ERROR_WHILE_READING_VALUE
-            if not link_quality["error"] and len(link_quality["out_value"]) > 0:
+            if not link_quality["error"] and len(link_quality["out_value"]) > 0 and not "no wireless extensions" in link_quality["out_value"]:
                 self.link_quality["_keys"].append(interface_name)
                 rows = link_quality["out_value"].split("\n")
                 for row in rows:
